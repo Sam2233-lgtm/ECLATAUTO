@@ -1,0 +1,248 @@
+{
+  "common": {
+    "bookNow": "Book Now",
+    "learnMore": "Learn More",
+    "from": "Starting at",
+    "currency": "$",
+    "loading": "Loading...",
+    "back": "Back",
+    "next": "Next",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "save": "Save",
+    "close": "Close",
+    "yes": "Yes",
+    "no": "No",
+    "error": "Error",
+    "success": "Success"
+  },
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "about": "About",
+    "contact": "Contact",
+    "reservation": "Book Now",
+    "admin": "Admin"
+  },
+  "hero": {
+    "badge": "Mobile detailing service in Quebec",
+    "title": "Automotive excellence",
+    "titleHighlight": "at your door",
+    "subtitle": "Premium professional detailing — we come to you. Your vehicle deserves the very best.",
+    "cta": "Book a Service",
+    "ctaSecondary": "View Our Services",
+    "mobileBadge": "We come to your address — no travel required on your part",
+    "stats": {
+      "clients": "Happy Clients",
+      "years": "Years of Experience",
+      "rating": "Average Rating"
+    }
+  },
+  "services": {
+    "title": "Our Services",
+    "subtitle": "Premium services designed to reveal your vehicle's natural shine",
+    "exteriorBasic": {
+      "name": "Basic Exterior Wash",
+      "description": "High-pressure rinse, full soap wash, drying, exterior window cleaning and wheel cleaning.",
+      "includes": ["High-pressure rinse", "Soap wash & degreasing", "Careful drying", "Exterior windows", "Wheels & hubcaps"]
+    },
+    "exteriorInterior": {
+      "name": "Exterior + Interior Wash",
+      "description": "Full exterior wash plus complete interior vacuum, surface wipe-down and interior window cleaning.",
+      "includes": ["Full exterior wash", "Complete vacuum", "Surface wipe-down", "Interior windows", "Deodorizer included"]
+    },
+    "shampoo": {
+      "name": "Seat & Carpet Shampoo",
+      "description": "Deep cleaning of seats (fabric or leather), carpet extraction and shampooing, deodorizer.",
+      "includes": ["Fabric or leather seats", "Extracted & shampooed mats", "Floor cleaned", "Stain treatment", "Professional deodorizer"]
+    },
+    "decontamination": {
+      "name": "Decontamination",
+      "description": "Iron removal, complete chemical decontamination of the bodywork and temporary protection.",
+      "includes": ["Complete iron removal", "Chemical decontamination", "Clay bar treatment", "Final rinse", "Temporary protection"]
+    },
+    "paintProtection": {
+      "name": "Paint Protection",
+      "description": "Application of professional wax or sealant, long-lasting UV protection and unmatched shine.",
+      "includes": ["Light polish", "Premium wax application", "UV protection", "Long-lasting shine", "Enhanced hydrophobicity"]
+    }
+  },
+  "whyUs": {
+    "title": "Why Choose Éclat Auto?",
+    "subtitle": "We bring professional detailing expertise directly to your home",
+    "items": {
+      "mobile": {
+        "title": "Fully Mobile Service",
+        "description": "We come to you. No need to move your vehicle — we work at your home or office."
+      },
+      "quality": {
+        "title": "Professional Products",
+        "description": "We exclusively use certified products, safe for your paint and the environment."
+      },
+      "experts": {
+        "title": "Certified Technicians",
+        "description": "Our team is trained and certified. Every detail matters — we treat your vehicle like our own."
+      },
+      "satisfaction": {
+        "title": "Satisfaction Guaranteed",
+        "description": "Your satisfaction is our top priority. Not happy? We come back, at no extra charge."
+      }
+    }
+  },
+  "process": {
+    "title": "How It Works",
+    "subtitle": "Simple, fast and hassle-free",
+    "steps": {
+      "book": {
+        "title": "Book Online",
+        "description": "Choose your service, date and enter your address in a few clicks."
+      },
+      "arrive": {
+        "title": "We Come to You",
+        "description": "Our technician arrives at the agreed time with all necessary equipment."
+      },
+      "enjoy": {
+        "title": "Enjoy the Results",
+        "description": "Your vehicle is transformed — shiny, clean and ready to impress."
+      }
+    }
+  },
+  "contact": {
+    "title": "Ready to Reveal Your Vehicle's Shine?",
+    "subtitle": "Book now and enjoy premium service at your door.",
+    "cta": "Book Now",
+    "phone": "Phone",
+    "email": "Email",
+    "hours": "Business Hours",
+    "hoursValue": "Mon–Sat: 8:00 AM – 6:00 PM",
+    "zone": "Service Area",
+    "zoneValue": "Greater Montreal & Laval"
+  },
+  "booking": {
+    "title": "Book Your Service",
+    "subtitle": "Fill out the form to book your at-home detailing",
+    "bookingDisabled": "Online booking is temporarily disabled. Please contact us directly.",
+    "steps": {
+      "service": "Service",
+      "vehicle": "Vehicle",
+      "datetime": "Date & Time",
+      "contact": "Contact Info",
+      "confirm": "Confirmation"
+    },
+    "service": {
+      "title": "Choose Your Service",
+      "subtitle": "Select the service that meets your needs"
+    },
+    "vehicle": {
+      "title": "Vehicle Type",
+      "subtitle": "Pricing varies based on vehicle size",
+      "compact": "Compact",
+      "sedan": "Sedan / Coupe",
+      "suv": "SUV / Crossover",
+      "truck": "Pickup Truck",
+      "van": "Van / Minivan"
+    },
+    "datetime": {
+      "title": "Date & Time",
+      "subtitle": "Choose the time that works for you",
+      "selectDate": "Select a date",
+      "selectTime": "Select a time slot",
+      "noWeekends": "Service available Monday to Saturday"
+    },
+    "contact": {
+      "title": "Your Contact Information",
+      "subtitle": "We come to your address — enter your information below",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address",
+      "city": "City",
+      "postalCode": "Postal Code",
+      "vehicleInfo": "Vehicle Information (optional)",
+      "vehicleMake": "Make",
+      "vehicleModel": "Model",
+      "vehicleYear": "Year",
+      "vehicleColor": "Color",
+      "notes": "Notes (optional)",
+      "notesPlaceholder": "Additional info, parking access, etc."
+    },
+    "confirm": {
+      "title": "Confirm Your Reservation",
+      "subtitle": "Review the details before confirming",
+      "service": "Service",
+      "vehicle": "Vehicle",
+      "vehicleDetails": "Vehicle Details",
+      "datetime": "Date & Time",
+      "address": "Address",
+      "contact": "Contact",
+      "totalEstimate": "Total Estimate",
+      "priceNote": "* Final price may vary depending on the vehicle's condition",
+      "submit": "Confirm Reservation",
+      "terms": "By confirming, you agree to be contacted by our team to validate your appointment."
+    },
+    "success": {
+      "title": "Reservation Received!",
+      "subtitle": "Thank you for your trust. Our team will contact you within 24h to confirm your appointment. A confirmation email has been sent to you.",
+      "reference": "Confirmation Number",
+      "newBooking": "New Reservation"
+    }
+  },
+  "admin": {
+    "login": {
+      "title": "Admin Panel",
+      "subtitle": "Sign in to access the management panel",
+      "email": "Email Address",
+      "password": "Password",
+      "submit": "Sign In",
+      "error": "Invalid credentials. Please try again."
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "welcome": "Welcome,",
+      "totalReservations": "Total Reservations",
+      "pendingReservations": "Pending",
+      "confirmedReservations": "Confirmed",
+      "completedReservations": "Completed",
+      "recentReservations": "Recent Reservations",
+      "viewAll": "View All"
+    },
+    "reservations": {
+      "title": "All Reservations",
+      "id": "ID",
+      "client": "Client",
+      "service": "Service",
+      "vehicle": "Vehicle",
+      "datetime": "Date & Time",
+      "status": "Status",
+      "actions": "Actions",
+      "noReservations": "No reservations found",
+      "filter": {
+        "all": "All",
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+      },
+      "updateStatus": "Update Status"
+    },
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "logout": "Sign Out"
+  },
+  "footer": {
+    "tagline": "Premium mobile automotive detailing service",
+    "services": "Services",
+    "company": "Company",
+    "about": "About",
+    "contact": "Contact",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "rights": "All rights reserved",
+    "madeIn": "Made in Quebec"
+  }
+}

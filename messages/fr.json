@@ -1,0 +1,248 @@
+{
+  "common": {
+    "bookNow": "Réserver maintenant",
+    "learnMore": "En savoir plus",
+    "from": "À partir de",
+    "currency": "$",
+    "loading": "Chargement...",
+    "back": "Retour",
+    "next": "Suivant",
+    "confirm": "Confirmer",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "close": "Fermer",
+    "yes": "Oui",
+    "no": "Non",
+    "error": "Erreur",
+    "success": "Succès"
+  },
+  "nav": {
+    "home": "Accueil",
+    "services": "Services",
+    "about": "À propos",
+    "contact": "Contact",
+    "reservation": "Réservation",
+    "admin": "Admin"
+  },
+  "hero": {
+    "badge": "Service à domicile au Québec",
+    "title": "L'excellence automobile",
+    "titleHighlight": "à votre porte",
+    "subtitle": "Détailing professionnel de luxe — nous venons directement chez vous. Votre véhicule mérite le meilleur.",
+    "cta": "Réserver un service",
+    "ctaSecondary": "Voir nos services",
+    "mobileBadge": "Nous nous déplaçons à votre adresse — aucun déplacement requis",
+    "stats": {
+      "clients": "Clients satisfaits",
+      "years": "Années d'expérience",
+      "rating": "Évaluation moyenne"
+    }
+  },
+  "services": {
+    "title": "Nos services",
+    "subtitle": "Des prestations pensées pour révéler l'éclat naturel de votre véhicule",
+    "exteriorBasic": {
+      "name": "Lavage extérieur de base",
+      "description": "Rinçage haute pression, savonnage complet, séchage, nettoyage des vitres et des roues.",
+      "includes": ["Rinçage haute pression", "Savonnage et dégraissage", "Séchage soigneux", "Vitres extérieures", "Roues et enjoliveurs"]
+    },
+    "exteriorInterior": {
+      "name": "Lavage extérieur + intérieur",
+      "description": "Tout le lavage extérieur plus aspirateur complet de l'habitacle, essuyage des surfaces et vitres intérieures.",
+      "includes": ["Tout le lavage extérieur", "Aspirateur complet", "Essuyage des surfaces", "Vitres intérieures", "Désodorisant inclus"]
+    },
+    "shampoo": {
+      "name": "Shampooing sièges et tapis",
+      "description": "Nettoyage en profondeur des sièges (tissu ou cuir), extraction et shampooinage des tapis, désodorisant.",
+      "includes": ["Sièges tissu ou cuir", "Tapis extraits et shampooinés", "Plancher nettoyé", "Traitement anti-taches", "Désodorisant professionnel"]
+    },
+    "decontamination": {
+      "name": "Décontamination",
+      "description": "Déferrisation, décontamination chimique complète de la carrosserie et protection temporaire.",
+      "includes": ["Déferrisation complète", "Décontamination chimique", "Argile décontaminante", "Rinçage final", "Protection temporaire"]
+    },
+    "paintProtection": {
+      "name": "Protection peinture",
+      "description": "Application de cire ou sealant professionnel, protection UV longue durée et brillance incomparable.",
+      "includes": ["Polish léger", "Application de cire premium", "Protection UV", "Brillance longue durée", "Hydrophobicité améliorée"]
+    }
+  },
+  "whyUs": {
+    "title": "Pourquoi choisir Éclat Auto?",
+    "subtitle": "Nous apportons l'expertise d'un détaillant professionnel directement à votre domicile",
+    "items": {
+      "mobile": {
+        "title": "Service entièrement mobile",
+        "description": "Nous venons à vous. Pas besoin de déplacer votre véhicule — nous travaillons à votre domicile ou bureau."
+      },
+      "quality": {
+        "title": "Produits professionnels",
+        "description": "Nous utilisons exclusivement des produits certifiés, respectueux de la peinture et de l'environnement."
+      },
+      "experts": {
+        "title": "Techniciens certifiés",
+        "description": "Notre équipe est formée et certifiée. Chaque détail compte — nous traitons votre véhicule comme le nôtre."
+      },
+      "satisfaction": {
+        "title": "Satisfaction garantie",
+        "description": "Votre satisfaction est notre priorité absolue. Pas satisfait? Nous revenons, sans frais supplémentaires."
+      }
+    }
+  },
+  "process": {
+    "title": "Comment ça fonctionne",
+    "subtitle": "Simple, rapide et sans tracas",
+    "steps": {
+      "book": {
+        "title": "Réservez en ligne",
+        "description": "Choisissez votre service, votre date et entrez votre adresse en quelques clics."
+      },
+      "arrive": {
+        "title": "On arrive chez vous",
+        "description": "Notre technicien se présente à l'heure convenue avec tout l'équipement nécessaire."
+      },
+      "enjoy": {
+        "title": "Profitez du résultat",
+        "description": "Votre véhicule est transformé — brillant, propre et prêt à impressionner."
+      }
+    }
+  },
+  "contact": {
+    "title": "Prêt à révéler l'éclat de votre véhicule?",
+    "subtitle": "Réservez dès maintenant et profitez d'un service premium à domicile.",
+    "cta": "Réserver maintenant",
+    "phone": "Téléphone",
+    "email": "Courriel",
+    "hours": "Heures d'ouverture",
+    "hoursValue": "Lun–Sam : 8h00 – 18h00",
+    "zone": "Zone de service",
+    "zoneValue": "Grand Montréal & Laval"
+  },
+  "booking": {
+    "title": "Réservez votre service",
+    "subtitle": "Remplissez le formulaire pour réserver votre détailing à domicile",
+    "bookingDisabled": "Les réservations en ligne sont temporairement désactivées. Contactez-nous directement.",
+    "steps": {
+      "service": "Service",
+      "vehicle": "Véhicule",
+      "datetime": "Date & heure",
+      "contact": "Coordonnées",
+      "confirm": "Confirmation"
+    },
+    "service": {
+      "title": "Choisissez votre service",
+      "subtitle": "Sélectionnez le service qui correspond à vos besoins"
+    },
+    "vehicle": {
+      "title": "Type de véhicule",
+      "subtitle": "Le prix varie selon la taille du véhicule",
+      "compact": "Compact",
+      "sedan": "Berline / Coupé",
+      "suv": "SUV / Multisegment",
+      "truck": "Camionnette",
+      "van": "Fourgonnette / Minivan"
+    },
+    "datetime": {
+      "title": "Date et heure",
+      "subtitle": "Choisissez le moment qui vous convient",
+      "selectDate": "Sélectionnez une date",
+      "selectTime": "Sélectionnez un créneau",
+      "noWeekends": "Service disponible du lundi au samedi"
+    },
+    "contact": {
+      "title": "Vos coordonnées",
+      "subtitle": "Nous nous déplaçons à votre adresse — entrez vos informations ci-dessous",
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "email": "Courriel",
+      "phone": "Téléphone",
+      "address": "Adresse",
+      "city": "Ville",
+      "postalCode": "Code postal",
+      "vehicleInfo": "Informations sur le véhicule (optionnel)",
+      "vehicleMake": "Marque",
+      "vehicleModel": "Modèle",
+      "vehicleYear": "Année",
+      "vehicleColor": "Couleur",
+      "notes": "Notes (optionnel)",
+      "notesPlaceholder": "Informations supplémentaires, accès au stationnement, etc."
+    },
+    "confirm": {
+      "title": "Confirmer votre réservation",
+      "subtitle": "Vérifiez les détails avant de confirmer",
+      "service": "Service",
+      "vehicle": "Véhicule",
+      "vehicleDetails": "Détails du véhicule",
+      "datetime": "Date et heure",
+      "address": "Adresse",
+      "contact": "Contact",
+      "totalEstimate": "Estimation du total",
+      "priceNote": "* Le prix final peut varier selon l'état du véhicule",
+      "submit": "Confirmer la réservation",
+      "terms": "En confirmant, vous acceptez d'être contacté par notre équipe pour valider votre rendez-vous."
+    },
+    "success": {
+      "title": "Réservation reçue!",
+      "subtitle": "Merci pour votre confiance. Notre équipe vous contactera sous 24h pour confirmer votre rendez-vous. Un courriel de confirmation vous a été envoyé.",
+      "reference": "Numéro de confirmation",
+      "newBooking": "Nouvelle réservation"
+    }
+  },
+  "admin": {
+    "login": {
+      "title": "Espace administrateur",
+      "subtitle": "Connectez-vous pour accéder au panneau de gestion",
+      "email": "Adresse courriel",
+      "password": "Mot de passe",
+      "submit": "Se connecter",
+      "error": "Identifiants invalides. Veuillez réessayer."
+    },
+    "dashboard": {
+      "title": "Tableau de bord",
+      "welcome": "Bienvenue,",
+      "totalReservations": "Réservations totales",
+      "pendingReservations": "En attente",
+      "confirmedReservations": "Confirmées",
+      "completedReservations": "Complétées",
+      "recentReservations": "Réservations récentes",
+      "viewAll": "Voir toutes"
+    },
+    "reservations": {
+      "title": "Toutes les réservations",
+      "id": "ID",
+      "client": "Client",
+      "service": "Service",
+      "vehicle": "Véhicule",
+      "datetime": "Date & heure",
+      "status": "Statut",
+      "actions": "Actions",
+      "noReservations": "Aucune réservation trouvée",
+      "filter": {
+        "all": "Toutes",
+        "pending": "En attente",
+        "confirmed": "Confirmées",
+        "completed": "Complétées",
+        "cancelled": "Annulées"
+      },
+      "updateStatus": "Mettre à jour le statut"
+    },
+    "status": {
+      "pending": "En attente",
+      "confirmed": "Confirmée",
+      "completed": "Complétée",
+      "cancelled": "Annulée"
+    },
+    "logout": "Déconnexion"
+  },
+  "footer": {
+    "tagline": "Service de détailing automobile premium à domicile",
+    "services": "Services",
+    "company": "Entreprise",
+    "about": "À propos",
+    "contact": "Contact",
+    "privacy": "Politique de confidentialité",
+    "terms": "Conditions d'utilisation",
+    "rights": "Tous droits réservés",
+    "madeIn": "Fait au Québec"
+  }
+}

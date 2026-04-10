@@ -1,0 +1,115 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --brand-black: #0a0a0a;
+    --brand-gold: #C9A84C;
+    --brand-cream: #F5F5F0;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: #0a0a0a;
+    color: #F5F5F0;
+    font-family: var(--font-inter), sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: #C9A84C;
+    color: #0a0a0a;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #0a0a0a;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #C9A84C;
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #D9BC74;
+  }
+}
+
+@layer components {
+  .gold-text {
+    @apply text-brand-gold;
+  }
+
+  .gold-gradient-text {
+    background: linear-gradient(135deg, #C9A84C 0%, #D9BC74 50%, #A8882E 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .card-dark {
+    @apply bg-brand-black-card border border-brand-black-border rounded-2xl;
+  }
+
+  .card-dark-hover {
+    @apply card-dark transition-all duration-300 hover:border-brand-gold/40 hover:shadow-lg hover:shadow-brand-gold/10;
+  }
+
+  .btn-gold {
+    @apply bg-brand-gold text-brand-black font-semibold px-6 py-3 rounded-lg
+           transition-all duration-200 hover:bg-brand-gold-light active:scale-95
+           focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2 focus:ring-offset-brand-black;
+  }
+
+  .btn-outline-gold {
+    @apply border border-brand-gold text-brand-gold font-semibold px-6 py-3 rounded-lg
+           transition-all duration-200 hover:bg-brand-gold hover:text-brand-black active:scale-95
+           focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2 focus:ring-offset-brand-black;
+  }
+
+  .btn-ghost {
+    @apply text-brand-cream-muted font-medium px-6 py-3 rounded-lg
+           transition-all duration-200 hover:text-brand-cream hover:bg-white/5 active:scale-95;
+  }
+
+  .input-dark {
+    @apply w-full bg-brand-black-soft border border-brand-black-border rounded-lg px-4 py-3
+           text-brand-cream placeholder-brand-cream-muted/50
+           focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold
+           transition-all duration-200;
+  }
+
+  .section-title {
+    @apply text-3xl md:text-4xl font-bold text-brand-cream;
+  }
+
+  .section-subtitle {
+    @apply text-brand-cream-muted text-lg mt-4 max-w-2xl mx-auto;
+  }
+
+  .gold-divider {
+    @apply w-16 h-0.5 bg-brand-gold mx-auto mt-4;
+  }
+}
+
+@layer utilities {
+  .text-gradient-gold {
+    background: linear-gradient(135deg, #C9A84C 0%, #D9BC74 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}

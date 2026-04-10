@@ -1,0 +1,9 @@
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.SUPABASE_URL!;
+const supabaseServiceKey = process.env.SUPABASE_SECRET_KEY!;
+
+// Server-side client with service role key (bypasses RLS)
+export const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+export const STORAGE_BUCKET = 'photos';

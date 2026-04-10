@@ -1,0 +1,154 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Reservation {
+  id                 String   @id @default(cuid())
+  confirmationNumber String?  @unique
+  service            String
+  vehicleType        String
+  vehicleMake        String   @default("")
+  vehicleModel       String   @default("")
+  vehicleYear        String   @default("")
+  vehicleColor       String   @default("")
+  date               String
+  timeSlot           String
+  firstName          String
+  lastName           String
+  email              String
+  phone              String
+  address            String
+  city               String
+  postalCode         String
+  notes              String?
+  internalNote       String?
+  price              Int      @default(0)
+  status             String   @default("pending")
+  locale             String   @default("fr")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model AdminUser {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+}
+
+model Service {
+  id            String             @id @default(cuid())
+  nameFr        String
+  nameEn        String
+  descriptionFr String
+  descriptionEn String
+  includesFr    String             @default("")
+  includesEn    String             @default("")
+  basePrice     Int
+  duration      Int
+  active        Boolean            @default(true)
+  order         Int                @default(0)
+  iconName      String             @default("Sparkles")
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  promotions    PromotionService[]
+}
+
+model Promotion {
+  id            String             @id @default(cuid())
+  name          String
+  description   String?
+  discountType  String             // 'percentage' | 'fixed'
+  discountValue Int
+  startDate     DateTime
+  endDate       DateTime
+  active        Boolean            @default(true)
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  services      PromotionService[]
+}
+
+model PromotionService {
+  promotionId String
+  serviceId   String
+  promotion   Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+  service     Service   @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@id([promotionId, serviceId])
+}
+
+model Photo {
+  id        String   @id @default(cuid())
+  filename  String
+  url       String
+  title     String?
+  caption   String?
+  type      String   @default("result") // 'before' | 'after' | 'result'
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String
+  location  String   @default("")
+  text      String
+  stars     Int      @default(5)
+  photoUrl  String?
+  active    Boolean  @default(true)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model FAQ {
+  id         String   @id @default(cuid())
+  questionFr String
+  questionEn String
+  answerFr   String
+  answerEn   String
+  active     Boolean  @default(true)
+  order      Int      @default(0)
+  createdAt  DateTime @default(now())
+}
+
+model BlockedDate {
+  id        String   @id @default(cuid())
+  date      String   // YYYY-MM-DD
+  timeSlot  String?  // null = full day blocked
+  reason    String?
+  createdAt DateTime @default(now())
+}
+
+model SiteSettings {
+  id                  String   @id @default("singleton")
+  // Contact
+  phone               String   @default("514-555-0100")
+  email               String   @default("info@eclatauto.ca")
+  adminEmail          String   @default("admin@eclatauto.ca")
+  // Social
+  instagramUrl        String   @default("")
+  facebookUrl         String   @default("")
+  // Hero content
+  heroBadge           String   @default("Service à domicile au Québec")
+  heroTitle           String   @default("L'excellence automobile")
+  heroTitleHighlight  String   @default("à votre porte")
+  heroSubtitle        String   @default("Détailing professionnel de luxe — nous venons directement chez vous. Votre véhicule mérite le meilleur.")
+  statClients         String   @default("500+")
+  statYears           String   @default("5+")
+  statRating          String   @default("4.9/5")
+  // Business
+  businessHours       String   @default("Lun–Sam : 8h00 – 18h00")
+  serviceZone         String   @default("Grand Montréal & Laval")
+  bookingEnabled      Boolean  @default(true)
+  // Emails
+  confirmationMessage String   @default("Merci pour votre réservation! Notre équipe vous contactera sous 24h pour confirmer votre rendez-vous.")
+  updatedAt           DateTime @updatedAt
+}
