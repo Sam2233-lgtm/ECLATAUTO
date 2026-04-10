@@ -22,7 +22,8 @@
     "about": "About",
     "contact": "Contact",
     "reservation": "Book Now",
-    "admin": "Admin"
+    "admin": "Admin",
+    "suivi": "Track my reservation"
   },
   "hero": {
     "badge": "Mobile detailing service in Quebec",

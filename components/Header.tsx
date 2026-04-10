@@ -30,6 +30,7 @@ export default function Header({ locale }: HeaderProps) {
     { label: t('services'), href: `/${locale}#services` },
     { label: t('about'), href: `/${locale}#why-us` },
     { label: t('contact'), href: `/${locale}#contact` },
+    { label: t('suivi'), href: `/${locale}/suivi` },
   ];
 
   return (

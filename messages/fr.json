@@ -22,7 +22,8 @@
     "about": "À propos",
     "contact": "Contact",
     "reservation": "Réservation",
-    "admin": "Admin"
+    "admin": "Admin",
+    "suivi": "Suivre ma réservation"
   },
   "hero": {
     "badge": "Service à domicile au Québec",
