@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Instagram, Facebook, Phone, Mail, Save, Check, Clock, MapPin, MessageSquare, Lock, Eye, EyeOff, AlertTriangle } from 'lucide-react';
+import { Instagram, Facebook, Phone, Mail, Save, Check, Clock, MapPin, MessageSquare, Lock, Eye, EyeOff, AlertTriangle, UserCog } from 'lucide-react';
 
 interface SiteSettings {
   id: string;
@@ -55,6 +55,13 @@ export default function SettingsForm({ initialSettings }: { initialSettings: Sit
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
+  // Email section
+  const [emailForm, setEmailForm] = useState({ newEmail: '', currentPassword: '' });
+  const [emailLoading, setEmailLoading] = useState(false);
+  const [emailSaved, setEmailSaved] = useState(false);
+  const [emailError, setEmailError] = useState('');
+  const [showEmailPw, setShowEmailPw] = useState(false);
+
   async function handleSave() {
     setLoading(true); setError(''); setSaved(false);
     try {
@@ -70,6 +77,33 @@ export default function SettingsForm({ initialSettings }: { initialSettings: Sit
       setError('Erreur lors de la sauvegarde.');
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleEmailSave() {
+    setEmailError(''); setEmailSaved(false);
+    if (!emailForm.newEmail) { setEmailError('Veuillez entrer un nouveau courriel.'); return; }
+    if (!emailForm.currentPassword) { setEmailError('Veuillez entrer votre mot de passe actuel.'); return; }
+
+    setEmailLoading(true);
+    try {
+      const res = await fetch('/api/admin/email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(emailForm),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error ?? 'Erreur');
+      }
+      setEmailSaved(true);
+      setEmailForm({ newEmail: '', currentPassword: '' });
+      setTimeout(() => setEmailSaved(false), 4000);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Erreur lors du changement de courriel.';
+      setEmailError(msg);
+    } finally {
+      setEmailLoading(false);
     }
   }
 
@@ -299,7 +333,80 @@ export default function SettingsForm({ initialSettings }: { initialSettings: Sit
         {saved ? 'Sauvegardé!' : 'Enregistrer les paramètres'}
       </button>
 
-      {/* Section 5: Changer le mot de passe */}
+      {/* Section 5: Changer le courriel de connexion */}
+      <div className="card-dark p-6">
+        <h2 className="text-lg font-semibold text-brand-cream mb-1 flex items-center gap-2">
+          <UserCog className="w-5 h-5 text-brand-gold" /> Changer le courriel de connexion
+        </h2>
+        <p className="text-brand-cream-muted/50 text-xs mb-5">
+          Courriel actuel : <span className="text-brand-cream-muted">{initialSettings.email || '—'}</span>
+        </p>
+
+        {emailError && (
+          <div className="mb-4 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3">
+            <p className="text-red-400 text-sm">{emailError}</p>
+          </div>
+        )}
+        {emailSaved && (
+          <div className="mb-4 bg-green-500/10 border border-green-500/20 rounded-lg px-4 py-3">
+            <p className="text-green-400 text-sm">Courriel changé avec succès! Reconnectez-vous avec votre nouveau courriel.</p>
+          </div>
+        )}
+
+        <div className="space-y-4">
+          <div>
+            <label className="block text-xs font-medium text-brand-cream-muted mb-1.5">Nouveau courriel</label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-cream-muted/50" />
+              <input
+                type="email"
+                className="input-dark pl-10"
+                value={emailForm.newEmail}
+                onChange={(e) => setEmailForm({ ...emailForm, newEmail: e.target.value })}
+                placeholder="nouveau@courriel.com"
+                autoComplete="email"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-brand-cream-muted mb-1.5">Mot de passe actuel (confirmation)</label>
+            <div className="relative">
+              <input
+                type={showEmailPw ? 'text' : 'password'}
+                className="input-dark pr-10"
+                value={emailForm.currentPassword}
+                onChange={(e) => setEmailForm({ ...emailForm, currentPassword: e.target.value })}
+                placeholder="••••••••"
+                autoComplete="current-password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowEmailPw(!showEmailPw)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-cream-muted/50 hover:text-brand-cream-muted transition-colors"
+              >
+                {showEmailPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <button
+          onClick={handleEmailSave}
+          disabled={emailLoading}
+          className="btn-gold flex items-center gap-2 mt-5 disabled:opacity-60"
+        >
+          {emailLoading ? (
+            <span className="inline-block w-4 h-4 border-2 border-brand-black/30 border-t-brand-black rounded-full animate-spin" />
+          ) : emailSaved ? (
+            <Check className="w-4 h-4" />
+          ) : (
+            <Mail className="w-4 h-4" />
+          )}
+          {emailSaved ? 'Courriel changé!' : 'Changer le courriel'}
+        </button>
+      </div>
+
+      {/* Section 6: Changer le mot de passe */}
       <div className="card-dark p-6">
         <h2 className="text-lg font-semibold text-brand-cream mb-5 flex items-center gap-2">
           <Lock className="w-5 h-5 text-brand-gold" /> Changer le mot de passe

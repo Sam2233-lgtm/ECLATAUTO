@@ -126,6 +126,13 @@ export async function sendConfirmationEmail(data: ReservationEmailData, adminEma
     </div>
 
     <p style="color:#888;font-size:13px;margin:0;font-style:italic;">${isFr ? '* Le prix final peut varier selon l\'état réel du véhicule.' : '* Final price may vary based on vehicle condition.'}</p>
+
+    <div style="text-align:center;margin-top:28px;">
+      <a href="${process.env.NEXTAUTH_URL ?? 'https://eclatautoqc.netlify.app'}/${data.locale ?? 'fr'}/suivi?ref=${data.confirmationNumber}"
+         style="display:inline-block;background:${GOLD};color:${BLACK};font-weight:700;padding:14px 32px;border-radius:8px;text-decoration:none;font-size:15px;">
+        ${isFr ? '🔍 Suivre ma réservation →' : '🔍 Track my reservation →'}
+      </a>
+    </div>
   `;
 
   await send({
@@ -236,15 +243,16 @@ export async function sendStatusUpdateEmail(
 async function send({ to, from, subject, html }: { to: string; from: string; subject: string; html: string }) {
   const transporter = createTransporter();
   if (!transporter) {
-    // Dev mode: log email to console
     console.log('\n📧 [EMAIL — DEV MODE]');
     console.log(`  To: ${to}`);
     console.log(`  Subject: ${subject}`);
     console.log('  (Email not actually sent — configure SMTP_HOST to enable sending)');
     return;
   }
+  // Gmail SMTP requires from to match authenticated user
+  const senderAddress = process.env.SMTP_FROM ?? `Éclat Auto <${process.env.SMTP_USER ?? from}>`;
   try {
-    await transporter.sendMail({ from, to, subject, html });
+    await transporter.sendMail({ from: senderAddress, to, subject, html });
   } catch (err) {
     console.error('[Email error]', err);
   }
