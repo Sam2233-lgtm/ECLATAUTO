@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
 
       await transporter.sendMail({
         from: process.env.SMTP_USER,
-        to: 'samuel@eclatautomtl.com',
+        to: adminEmail,
         subject: `🔔 Nouveau devis — ${firstName} ${lastName}`,
         html: `<h2>Nouvelle demande de devis</h2>
 <p><strong>Client:</strong> ${firstName} ${lastName}</p>
