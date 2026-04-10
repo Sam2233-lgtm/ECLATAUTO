@@ -29,6 +29,7 @@ interface Reservation {
   postalCode?: string;
   notes?: string | null;
   internalNote?: string | null;
+  supplements?: Array<{ id: string; nameFr: string; nameEn: string; price: number }> | null;
   price?: number;
   createdAt: Date;
 }
@@ -389,12 +390,29 @@ export default function ReservationsTable({ reservations, locale, activeStatus, 
                   </div>
                   {selectedReservation.price !== undefined && selectedReservation.price > 0 && (
                     <div className="flex justify-between">
-                      <span className="text-brand-cream-muted text-sm">Prix</span>
+                      <span className="text-brand-cream-muted text-sm">Prix total</span>
                       <span className="text-brand-gold text-sm font-semibold">{selectedReservation.price}$</span>
                     </div>
                   )}
                 </div>
               </div>
+
+              {/* Supplements */}
+              {selectedReservation.supplements && (selectedReservation.supplements as Array<{ nameFr: string; nameEn: string; price: number }>).length > 0 && (
+                <div>
+                  <h3 className="text-xs font-semibold text-brand-cream-muted uppercase tracking-wider mb-3">
+                    Suppléments choisis
+                  </h3>
+                  <div className="bg-brand-black rounded-xl p-4 space-y-2">
+                    {(selectedReservation.supplements as Array<{ nameFr: string; nameEn: string; price: number }>).map((s, i) => (
+                      <div key={i} className="flex justify-between items-center">
+                        <span className="text-brand-cream text-sm">{s.nameFr}</span>
+                        <span className="text-brand-gold text-sm font-semibold">+{s.price}$</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Client notes */}
               {selectedReservation.notes && (

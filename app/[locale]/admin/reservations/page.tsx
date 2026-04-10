@@ -46,7 +46,7 @@ export default async function ReservationsPage({
       </div>
 
       <ReservationsTable
-        reservations={reservations}
+        reservations={reservations.map((r) => ({ ...r, supplements: r.supplements as Array<{ id: string; nameFr: string; nameEn: string; price: number }> | null }))}
         locale={locale}
         activeStatus={statusFilter || 'all'}
         serviceNames={serviceNames}
