@@ -40,7 +40,7 @@ export default async function AdminDashboard({ params: { locale } }: AdminDashbo
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
 
-  const [todayCount, pendingCount, pendingQuotesCount, weekReservations, monthRevenue, recent] = await Promise.all([
+  const [todayCount, pendingCount, pendingQuotesCount, weekReservations, monthRevenue, recent, services] = await Promise.all([
     prisma.reservation.count({ where: { date: todayStr } }),
     prisma.reservation.count({ where: { status: 'pending' } }),
     prisma.quote.count({ where: { status: 'pending' } }),
@@ -69,6 +69,7 @@ export default async function AdminDashboard({ params: { locale } }: AdminDashbo
         confirmationNumber: true,
       },
     }),
+    prisma.service.findMany({ select: { id: true, nameFr: true } }),
   ]);
 
   const weekCount = weekReservations.length;
@@ -85,13 +86,7 @@ export default async function AdminDashboard({ params: { locale } }: AdminDashbo
     { label: 'Paramètres', href: `/${locale}/admin/settings`, icon: Settings, desc: 'Coordonnées et options' },
   ];
 
-  const SERVICE_NAMES: Record<string, string> = {
-    'exterior-basic': 'Lavage ext. de base',
-    'exterior-interior': 'Lavage ext. + int.',
-    'shampoo': 'Shampooing',
-    'decontamination': 'Décontamination',
-    'paint-protection': 'Protection peinture',
-  };
+  const SERVICE_NAMES: Record<string, string> = Object.fromEntries(services.map((s) => [s.id, s.nameFr]));
 
   return (
     <AdminShell locale={locale}>

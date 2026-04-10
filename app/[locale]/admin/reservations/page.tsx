@@ -22,10 +22,19 @@ export default async function ReservationsPage({
   const t = await getTranslations('admin.reservations');
 
   const statusFilter = searchParams.status;
-  const reservations = await prisma.reservation.findMany({
-    where: statusFilter && statusFilter !== 'all' ? { status: statusFilter } : undefined,
-    orderBy: { createdAt: 'desc' },
-  });
+  const [reservations, services] = await Promise.all([
+    prisma.reservation.findMany({
+      where: statusFilter && statusFilter !== 'all' ? { status: statusFilter } : undefined,
+      orderBy: { createdAt: 'desc' },
+    }),
+    prisma.service.findMany({ select: { id: true, nameFr: true, nameEn: true }, orderBy: { order: 'asc' } }),
+  ]);
+
+  // Build service name map: id → name
+  const serviceNames: Record<string, string> = {};
+  for (const s of services) {
+    serviceNames[s.id] = locale === 'en' ? s.nameEn : s.nameFr;
+  }
 
   return (
     <AdminShell locale={locale}>
@@ -40,6 +49,7 @@ export default async function ReservationsPage({
         reservations={reservations}
         locale={locale}
         activeStatus={statusFilter || 'all'}
+        serviceNames={serviceNames}
       />
     </AdminShell>
   );

@@ -37,15 +37,8 @@ interface ReservationsTableProps {
   reservations: Reservation[];
   locale: string;
   activeStatus: string;
+  serviceNames?: Record<string, string>;
 }
-
-const SERVICE_NAMES: Record<string, string> = {
-  'exterior-basic': 'Lavage ext. de base',
-  'exterior-interior': 'Lavage ext. + int.',
-  'shampoo': 'Shampooing',
-  'decontamination': 'Décontamination',
-  'paint-protection': 'Protection peinture',
-};
 
 const VEHICLE_NAMES: Record<string, string> = {
   compact: 'Compact',
@@ -57,7 +50,7 @@ const VEHICLE_NAMES: Record<string, string> = {
 
 const FILTER_TABS = ['all', 'pending', 'confirmed', 'completed', 'cancelled'] as const;
 
-export default function ReservationsTable({ reservations, locale, activeStatus }: ReservationsTableProps) {
+export default function ReservationsTable({ reservations, locale, activeStatus, serviceNames = {} }: ReservationsTableProps) {
   const t = useTranslations('admin.reservations');
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -185,7 +178,7 @@ export default function ReservationsTable({ reservations, locale, activeStatus }
                     <div className="text-brand-cream-muted/60 text-xs">{r.city}</div>
                   </td>
                   <td className="px-5 py-4 text-brand-cream-muted text-sm">
-                    {SERVICE_NAMES[r.service] ?? r.service}
+                    {serviceNames[r.service] ?? r.service}
                   </td>
                   <td className="px-5 py-4 text-brand-cream-muted text-sm">
                     {VEHICLE_NAMES[r.vehicleType] ?? r.vehicleType}
@@ -383,7 +376,7 @@ export default function ReservationsTable({ reservations, locale, activeStatus }
                   <div className="flex justify-between">
                     <span className="text-brand-cream-muted text-sm">Service</span>
                     <span className="text-brand-cream text-sm">
-                      {SERVICE_NAMES[selectedReservation.service] ?? selectedReservation.service}
+                      {serviceNames[selectedReservation.service] ?? selectedReservation.service}
                     </span>
                   </div>
                   <div className="flex justify-between">
