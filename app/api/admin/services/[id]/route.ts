@@ -7,7 +7,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (!session) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 });
 
   const body = await req.json();
-  const { nameFr, nameEn, descriptionFr, descriptionEn, includesFr, includesEn, basePrice, duration, active, order, iconName } = body;
+  const { nameFr, nameEn, descriptionFr, descriptionEn, includesFr, includesEn, basePrice, pricing, duration, active, order, iconName } = body;
 
   const service = await prisma.service.update({
     where: { id: params.id },
@@ -19,6 +19,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       ...(includesFr !== undefined && { includesFr }),
       ...(includesEn !== undefined && { includesEn }),
       ...(basePrice !== undefined && { basePrice: parseInt(basePrice) }),
+      ...(pricing !== undefined && { pricing }),
       ...(duration !== undefined && { duration: parseInt(duration) }),
       ...(active !== undefined && { active }),
       ...(order !== undefined && { order }),

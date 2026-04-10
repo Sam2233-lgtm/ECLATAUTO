@@ -4,6 +4,18 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Pencil, Trash2, Eye, EyeOff, Check, X, GripVertical } from 'lucide-react';
 
+type VehicleType = 'compact' | 'sedan' | 'suv' | 'truck' | 'van';
+
+const VEHICLE_LABELS: Record<VehicleType, string> = {
+  compact: 'Compacte',
+  sedan:   'Berline',
+  suv:     'VUS / Crossover',
+  truck:   'Camion',
+  van:     'Fourgonnette / Minivan',
+};
+
+const VEHICLE_TYPES: VehicleType[] = ['compact', 'sedan', 'suv', 'truck', 'van'];
+
 interface Service {
   id: string;
   nameFr: string;
@@ -13,16 +25,21 @@ interface Service {
   includesFr: string;
   includesEn: string;
   basePrice: number;
+  pricing: Record<VehicleType, number> | null;
   duration: number;
   active: boolean;
   order: number;
   iconName: string;
 }
 
+const EMPTY_PRICING: Record<VehicleType, number> = {
+  compact: 0, sedan: 0, suv: 0, truck: 0, van: 0,
+};
+
 const EMPTY_SERVICE: Omit<Service, 'id'> = {
   nameFr: '', nameEn: '', descriptionFr: '', descriptionEn: '',
-  includesFr: '', includesEn: '', basePrice: 0, duration: 60,
-  active: true, order: 0, iconName: 'Sparkles',
+  includesFr: '', includesEn: '', basePrice: 0, pricing: { ...EMPTY_PRICING },
+  duration: 60, active: true, order: 0, iconName: 'Sparkles',
 };
 
 const ICON_OPTIONS = ['Droplets', 'Sparkles', 'Wind', 'Shield', 'Star', 'Car', 'Zap', 'Award'];
@@ -38,7 +55,10 @@ export default function ServicesManager({ initialServices }: { initialServices: 
 
   function openEdit(service: Service) {
     setEditing(service);
-    setForm({ ...service });
+    setForm({
+      ...service,
+      pricing: service.pricing ?? { ...EMPTY_PRICING },
+    });
     setCreating(false);
     setError('');
   }
@@ -56,23 +76,39 @@ export default function ServicesManager({ initialServices }: { initialServices: 
     setError('');
   }
 
+  function updatePricing(type: VehicleType, value: number) {
+    setForm((prev) => ({
+      ...prev,
+      pricing: { ...(prev.pricing ?? EMPTY_PRICING), [type]: value },
+    }));
+  }
+
   async function handleSave() {
-    if (!form.nameFr || !form.nameEn || !form.basePrice || !form.duration) {
-      setError('Les champs nom (FR/EN), prix et durée sont requis.');
+    if (!form.nameFr || !form.nameEn || !form.duration) {
+      setError('Les champs nom (FR/EN) et durée sont requis.');
       return;
     }
+    const pricing = form.pricing ?? EMPTY_PRICING;
+    const hasAnyPrice = Object.values(pricing).some((v) => v > 0);
+    if (!hasAnyPrice) {
+      setError('Veuillez entrer au moins un prix pour un type de véhicule.');
+      return;
+    }
+    // basePrice = minimum non-zero price for backward compatibility
+    const minPrice = Math.min(...Object.values(pricing).filter((v) => v > 0));
+    const payload = { ...form, basePrice: minPrice, pricing };
     setLoading(true);
     setError('');
     try {
       if (creating) {
         const res = await fetch('/api/admin/services', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form),
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
         });
         const newService = await res.json();
         setServices((prev) => [...prev, newService]);
       } else if (editing) {
         const res = await fetch(`/api/admin/services/${editing.id}`, {
-          method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form),
+          method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
         });
         const updated = await res.json();
         setServices((prev) => prev.map((s) => (s.id === editing.id ? updated : s)));
@@ -152,9 +188,29 @@ export default function ServicesManager({ initialServices }: { initialServices: 
               <label className="block text-xs font-medium text-brand-cream-muted mb-1.5">What's included (EN) — one item per line</label>
               <textarea className="input-dark resize-none font-mono text-sm" rows={5} value={form.includesEn} onChange={(e) => setForm({ ...form, includesEn: e.target.value })} placeholder="High-pressure rinse&#10;Soap wash & degreasing&#10;..." />
             </div>
-            <div>
-              <label className="block text-xs font-medium text-brand-cream-muted mb-1.5">Prix de base ($) *</label>
-              <input type="number" className="input-dark" value={form.basePrice} onChange={(e) => setForm({ ...form, basePrice: parseInt(e.target.value) || 0 })} min={0} />
+            <div className="md:col-span-2">
+              <label className="block text-xs font-medium text-brand-cream-muted mb-3">
+                Prix par type de véhicule ($) *
+                <span className="ml-2 text-brand-cream-muted/60 font-normal">— entrez 0 pour masquer un type</span>
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+                {VEHICLE_TYPES.map((type) => (
+                  <div key={type}>
+                    <label className="block text-xs text-brand-cream-muted/70 mb-1">{VEHICLE_LABELS[type]}</label>
+                    <div className="relative">
+                      <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-brand-gold text-sm font-bold">$</span>
+                      <input
+                        type="number"
+                        className="input-dark pl-6"
+                        value={(form.pricing ?? EMPTY_PRICING)[type] || ''}
+                        onChange={(e) => updatePricing(type, parseInt(e.target.value) || 0)}
+                        min={0}
+                        placeholder="0"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
             <div>
               <label className="block text-xs font-medium text-brand-cream-muted mb-1.5">Durée (minutes) *</label>
@@ -208,9 +264,20 @@ export default function ServicesManager({ initialServices }: { initialServices: 
               </div>
               <div className="text-brand-cream-muted text-sm mt-0.5 truncate">{service.descriptionFr}</div>
             </div>
-            <div className="text-right flex-shrink-0">
-              <div className="text-brand-gold font-bold text-lg">${service.basePrice}</div>
-              <div className="text-brand-cream-muted text-xs">{service.duration} min</div>
+            <div className="text-right flex-shrink-0 hidden sm:block">
+              {service.pricing ? (
+                <div className="text-xs text-brand-cream-muted space-y-0.5">
+                  {VEHICLE_TYPES.filter((t) => (service.pricing as Record<string, number>)[t] > 0).map((t) => (
+                    <div key={t} className="flex justify-between gap-3">
+                      <span>{VEHICLE_LABELS[t]}</span>
+                      <span className="text-brand-gold font-semibold">${(service.pricing as Record<string, number>)[t]}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-brand-gold font-bold text-lg">${service.basePrice}</div>
+              )}
+              <div className="text-brand-cream-muted text-xs mt-1">{service.duration} min</div>
             </div>
             <div className="flex items-center gap-1 flex-shrink-0">
               <button onClick={() => toggleActive(service)} title={service.active ? 'Désactiver' : 'Activer'}

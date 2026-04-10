@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Check, MapPin } from 'lucide-react';
-import { VEHICLE_TYPES, VEHICLE_MULTIPLIERS, TIME_SLOTS, type VehicleType } from '@/lib/constants';
+import { VEHICLE_TYPES, VEHICLE_TYPE_LABELS, TIME_SLOTS, getPriceForVehicle, type VehicleType } from '@/lib/constants';
 import { calcPromoPrice, type DbService } from '@/lib/db-services';
 
 interface BookingData {
@@ -55,10 +55,11 @@ function getDisplayPrice(
   service: DbService,
   vehicleType: VehicleType | ''
 ): { base: number; promo: number | null } {
-  const multiplier = vehicleType ? VEHICLE_MULTIPLIERS[vehicleType] : 1;
-  const base = Math.round(service.basePrice * multiplier);
+  const base = vehicleType
+    ? getPriceForVehicle(service.basePrice, vehicleType, service.pricing)
+    : service.basePrice;
   const promo = service.promotion
-    ? Math.round(calcPromoPrice(service.basePrice, service.promotion) * multiplier)
+    ? Math.round(calcPromoPrice(base, service.promotion))
     : null;
   return { base, promo };
 }
@@ -341,21 +342,27 @@ export default function BookingWizard({
                         )}
                       </div>
                       <div className="text-right ml-4">
-                        {service.promotion ? (
-                          <div>
-                            <div className="line-through text-brand-cream-muted text-xs">
-                              {tCommon('currency')}{service.basePrice}
+                        {(() => {
+                          const minPrice = service.pricing
+                            ? Math.min(...Object.values(service.pricing as Record<string, number>).filter(v => v > 0))
+                            : service.basePrice;
+                          const displayMin = isFinite(minPrice) ? minPrice : service.basePrice;
+                          return service.promotion ? (
+                            <div>
+                              <div className="line-through text-brand-cream-muted text-xs">
+                                {tCommon('currency')}{displayMin}
+                              </div>
+                              <div className="text-brand-gold font-bold">
+                                {tCommon('from')} {tCommon('currency')}
+                                {calcPromoPrice(displayMin, service.promotion)}
+                              </div>
                             </div>
+                          ) : (
                             <div className="text-brand-gold font-bold">
-                              {tCommon('from')} {tCommon('currency')}
-                              {calcPromoPrice(service.basePrice, service.promotion)}
+                              {tCommon('from')} {tCommon('currency')}{displayMin}
                             </div>
-                          </div>
-                        ) : (
-                          <div className="text-brand-gold font-bold">
-                            {tCommon('from')} {tCommon('currency')}{service.basePrice}
-                          </div>
-                        )}
+                          );
+                        })()}
                         {selected && <Check className="w-4 h-4 text-brand-gold ml-auto mt-1" />}
                       </div>
                     </button>
@@ -402,8 +409,8 @@ export default function BookingWizard({
                           </span>
                         </div>
                       ) : (
-                        <span className="text-brand-gold text-sm mt-0.5 block">
-                          {tCommon('from')} {tCommon('currency')}{prices.base}
+                        <span className="text-brand-gold text-sm mt-0.5 block font-bold">
+                          {tCommon('currency')}{prices.base}
                         </span>
                       ))}
                   </button>

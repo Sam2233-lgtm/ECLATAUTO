@@ -16,6 +16,7 @@ export interface DbService {
   includesFr: string;
   includesEn: string;
   basePrice: number;
+  pricing: Record<string, number> | null;
   duration: number;
   active: boolean;
   order: number;
@@ -52,6 +53,7 @@ export async function getActiveServicesWithPromos(): Promise<DbService[]> {
     includesFr: s.includesFr,
     includesEn: s.includesEn,
     basePrice: s.basePrice,
+    pricing: s.pricing as Record<string, number> | null,
     duration: s.duration,
     active: s.active,
     order: s.order,

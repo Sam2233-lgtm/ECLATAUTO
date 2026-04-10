@@ -53,6 +53,7 @@ model Service {
   includesFr    String             @default("")
   includesEn    String             @default("")
   basePrice     Int
+  pricing       Json?              // {"compact": 49, "sedan": 49, "suv": 59, "truck": 65, "van": 69}
   duration      Int
   active        Boolean            @default(true)
   order         Int                @default(0)

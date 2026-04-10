@@ -15,9 +15,9 @@ export async function POST(req: NextRequest) {
   if (!session) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 });
 
   const body = await req.json();
-  const { nameFr, nameEn, descriptionFr, descriptionEn, includesFr, includesEn, basePrice, duration, active, order, iconName } = body;
+  const { nameFr, nameEn, descriptionFr, descriptionEn, includesFr, includesEn, basePrice, pricing, duration, active, order, iconName } = body;
 
-  if (!nameFr || !nameEn || !basePrice || !duration) {
+  if (!nameFr || !nameEn || !duration) {
     return NextResponse.json({ error: 'Champs requis manquants' }, { status: 400 });
   }
 
@@ -28,7 +28,8 @@ export async function POST(req: NextRequest) {
       descriptionEn: descriptionEn || '',
       includesFr: includesFr || '',
       includesEn: includesEn || '',
-      basePrice: parseInt(basePrice),
+      basePrice: parseInt(basePrice) || 0,
+      pricing: pricing ?? null,
       duration: parseInt(duration),
       active: active !== false,
       order: order || 0,
