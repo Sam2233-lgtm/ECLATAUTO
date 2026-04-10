@@ -4,6 +4,13 @@ import { z } from 'zod';
 import { sendConfirmationEmail, sendAdminNotificationEmail } from '@/lib/email';
 import { getSiteSettings, generateConfirmationNumber } from '@/lib/db-services';
 
+const SupplementSchema = z.object({
+  id: z.string(),
+  nameFr: z.string(),
+  nameEn: z.string(),
+  price: z.number(),
+});
+
 const ReservationSchema = z.object({
   service: z.string().min(1),
   vehicleType: z.string().min(1),
@@ -21,7 +28,8 @@ const ReservationSchema = z.object({
   city: z.string().min(2).max(100),
   postalCode: z.string().min(6).max(10),
   notes: z.string().max(500).optional().default(''),
-  price: z.number().int().min(0).optional().default(0),
+  price: z.number().min(0).optional().default(0),
+  supplements: z.array(SupplementSchema).optional().default([]),
   locale: z.enum(['fr', 'en']).optional().default('fr'),
 });
 
@@ -54,9 +62,12 @@ export async function POST(req: NextRequest) {
 
     const confirmationNumber = await generateConfirmationNumber();
 
+    const { supplements, ...reservationData } = data;
+
     const reservation = await prisma.reservation.create({
       data: {
-        ...data,
+        ...reservationData,
+        supplements: supplements.length > 0 ? supplements : undefined,
         confirmationNumber,
       },
     });
@@ -80,6 +91,7 @@ export async function POST(req: NextRequest) {
       postalCode: data.postalCode,
       notes: data.notes,
       price: data.price,
+      supplements,
       locale: data.locale,
     };
 

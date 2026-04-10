@@ -23,7 +23,8 @@
     "contact": "Contact",
     "reservation": "Book Now",
     "admin": "Admin",
-    "suivi": "Track my reservation"
+    "suivi": "Track my reservation",
+    "devis": "Get a Quote"
   },
   "hero": {
     "badge": "Mobile detailing service in Quebec",
@@ -45,27 +46,57 @@
     "exteriorBasic": {
       "name": "Basic Exterior Wash",
       "description": "High-pressure rinse, full soap wash, drying, exterior window cleaning and wheel cleaning.",
-      "includes": ["High-pressure rinse", "Soap wash & degreasing", "Careful drying", "Exterior windows", "Wheels & hubcaps"]
+      "includes": [
+        "High-pressure rinse",
+        "Soap wash & degreasing",
+        "Careful drying",
+        "Exterior windows",
+        "Wheels & hubcaps"
+      ]
     },
     "exteriorInterior": {
       "name": "Exterior + Interior Wash",
       "description": "Full exterior wash plus complete interior vacuum, surface wipe-down and interior window cleaning.",
-      "includes": ["Full exterior wash", "Complete vacuum", "Surface wipe-down", "Interior windows", "Deodorizer included"]
+      "includes": [
+        "Full exterior wash",
+        "Complete vacuum",
+        "Surface wipe-down",
+        "Interior windows",
+        "Deodorizer included"
+      ]
     },
     "shampoo": {
       "name": "Seat & Carpet Shampoo",
       "description": "Deep cleaning of seats (fabric or leather), carpet extraction and shampooing, deodorizer.",
-      "includes": ["Fabric or leather seats", "Extracted & shampooed mats", "Floor cleaned", "Stain treatment", "Professional deodorizer"]
+      "includes": [
+        "Fabric or leather seats",
+        "Extracted & shampooed mats",
+        "Floor cleaned",
+        "Stain treatment",
+        "Professional deodorizer"
+      ]
     },
     "decontamination": {
       "name": "Decontamination",
       "description": "Iron removal, complete chemical decontamination of the bodywork and temporary protection.",
-      "includes": ["Complete iron removal", "Chemical decontamination", "Clay bar treatment", "Final rinse", "Temporary protection"]
+      "includes": [
+        "Complete iron removal",
+        "Chemical decontamination",
+        "Clay bar treatment",
+        "Final rinse",
+        "Temporary protection"
+      ]
     },
     "paintProtection": {
       "name": "Paint Protection",
       "description": "Application of professional wax or sealant, long-lasting UV protection and unmatched shine.",
-      "includes": ["Light polish", "Premium wax application", "UV protection", "Long-lasting shine", "Enhanced hydrophobicity"]
+      "includes": [
+        "Light polish",
+        "Premium wax application",
+        "UV protection",
+        "Long-lasting shine",
+        "Enhanced hydrophobicity"
+      ]
     }
   },
   "whyUs": {

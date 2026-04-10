@@ -67,6 +67,13 @@ function baseTemplate(title: string, body: string): string {
 </html>`;
 }
 
+export interface SupplementEmailData {
+  id: string;
+  nameFr: string;
+  nameEn: string;
+  price: number;
+}
+
 export interface ReservationEmailData {
   confirmationNumber: string;
   firstName: string;
@@ -86,6 +93,7 @@ export interface ReservationEmailData {
   postalCode: string;
   notes?: string;
   price: number;
+  supplements?: SupplementEmailData[];
   locale?: string;
 }
 
@@ -97,16 +105,34 @@ function row(label: string, value: string): string {
     </tr>`;
 }
 
+function supplementsBlock(supplements: SupplementEmailData[], isFr: boolean): string {
+  if (!supplements || supplements.length === 0) return '';
+  const items = supplements
+    .map((s) => `<tr>
+      <td style="padding:6px 0;color:#444;font-size:13px;">+ ${isFr ? s.nameFr : s.nameEn}</td>
+      <td style="padding:6px 0;color:#C9A84C;font-size:13px;font-weight:600;text-align:right;">${s.price.toFixed(2)}$</td>
+    </tr>`)
+    .join('');
+  return `
+    <div style="background:#fafafa;border:1px solid #e8e8e8;border-radius:10px;padding:20px 24px;margin-bottom:20px;">
+      <h3 style="color:${GOLD};font-size:13px;text-transform:uppercase;letter-spacing:1px;margin:0 0 12px;">
+        ${isFr ? 'Suppléments choisis' : 'Selected add-ons'}
+      </h3>
+      <table width="100%" cellpadding="0" cellspacing="0">${items}</table>
+    </div>`;
+}
+
 // Email to customer confirming reservation
 export async function sendConfirmationEmail(data: ReservationEmailData, adminEmail: string, confirmationMsg: string) {
   const isFr = data.locale !== 'en';
   const vehicle = [data.vehicleMake, data.vehicleModel, data.vehicleYear].filter(Boolean).join(' ') || data.vehicleType;
+  const supps = data.supplements ?? [];
 
   const body = `
     <h2 style="color:#111;font-size:24px;margin:0 0 8px;">${isFr ? 'Réservation confirmée! 🎉' : 'Reservation Received! 🎉'}</h2>
     <p style="color:#666;font-size:15px;margin:0 0 28px;line-height:1.6;">${confirmationMsg}</p>
 
-    <div style="background:#fafafa;border:1px solid #e8e8e8;border-radius:10px;padding:24px;margin-bottom:28px;">
+    <div style="background:#fafafa;border:1px solid #e8e8e8;border-radius:10px;padding:24px;margin-bottom:20px;">
       <h3 style="color:${GOLD};font-size:14px;text-transform:uppercase;letter-spacing:1px;margin:0 0 16px;">${isFr ? 'Détails de votre réservation' : 'Booking Details'}</h3>
       <table width="100%" cellpadding="0" cellspacing="0">
         ${row(isFr ? 'N° de confirmation' : 'Confirmation #', `<span style="font-family:monospace;background:#111;color:${GOLD};padding:2px 8px;border-radius:4px;">${data.confirmationNumber}</span>`)}
@@ -120,14 +146,20 @@ export async function sendConfirmationEmail(data: ReservationEmailData, adminEma
       </table>
     </div>
 
-    <div style="background:${BLACK};border-radius:10px;padding:20px 24px;margin-bottom:28px;display:flex;align-items:center;justify-content:space-between;">
-      <span style="color:#fff;font-size:15px;">${isFr ? 'Estimation du total' : 'Total Estimate'}</span>
-      <span style="color:${GOLD};font-size:24px;font-weight:700;">~${data.price}$</span>
+    ${supplementsBlock(supps, isFr)}
+
+    <div style="background:${BLACK};border-radius:10px;padding:20px 24px;margin-bottom:20px;">
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="color:#fff;font-size:15px;">${isFr ? 'Estimation du total' : 'Total Estimate'}</td>
+          <td style="color:${GOLD};font-size:24px;font-weight:700;text-align:right;">~${data.price.toFixed(2)}$</td>
+        </tr>
+      </table>
     </div>
 
-    <p style="color:#888;font-size:13px;margin:0;font-style:italic;">${isFr ? '* Le prix final peut varier selon l\'état réel du véhicule.' : '* Final price may vary based on vehicle condition.'}</p>
+    <p style="color:#888;font-size:13px;margin:0 0 28px;font-style:italic;">${isFr ? '* Le prix final peut varier selon l\'état réel du véhicule.' : '* Final price may vary based on vehicle condition.'}</p>
 
-    <div style="text-align:center;margin-top:28px;">
+    <div style="text-align:center;">
       <a href="${process.env.NEXTAUTH_URL ?? 'https://eclatautoqc.netlify.app'}/${data.locale ?? 'fr'}/suivi?ref=${data.confirmationNumber}"
          style="display:inline-block;background:${GOLD};color:${BLACK};font-weight:700;padding:14px 32px;border-radius:8px;text-decoration:none;font-size:15px;">
         ${isFr ? '🔍 Suivre ma réservation →' : '🔍 Track my reservation →'}
@@ -148,6 +180,12 @@ export async function sendConfirmationEmail(data: ReservationEmailData, adminEma
 // Email to admin notifying of new reservation
 export async function sendAdminNotificationEmail(data: ReservationEmailData, adminEmail: string) {
   const vehicle = [data.vehicleMake, data.vehicleModel, data.vehicleYear].filter(Boolean).join(' ') || data.vehicleType;
+  const supps = data.supplements ?? [];
+
+  const supplementsRows = supps.length > 0
+    ? supps.map((s) => row(`+ ${s.nameFr}`, `${s.price.toFixed(2)}$`)).join('')
+    : '';
+
   const body = `
     <h2 style="color:#111;font-size:22px;margin:0 0 8px;">🔔 Nouvelle réservation</h2>
     <p style="color:#666;font-size:14px;margin:0 0 24px;">Une nouvelle réservation vient d'être soumise sur le site.</p>
@@ -170,7 +208,8 @@ export async function sendAdminNotificationEmail(data: ReservationEmailData, adm
         ${row('Véhicule', `${vehicle}${data.vehicleColor ? ' — ' + data.vehicleColor : ''}`)}
         ${row('Date', formatDate(data.date))}
         ${row('Heure', data.timeSlot)}
-        ${row('Prix estimé', `${data.price}$`)}
+        ${supplementsRows}
+        ${row('Prix total estimé', `${data.price.toFixed(2)}$`)}
         ${data.notes ? row('Notes client', data.notes) : ''}
       </table>
     </div>

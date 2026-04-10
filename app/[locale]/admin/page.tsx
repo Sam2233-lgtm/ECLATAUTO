@@ -40,9 +40,10 @@ export default async function AdminDashboard({ params: { locale } }: AdminDashbo
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
 
-  const [todayCount, pendingCount, weekReservations, monthRevenue, recent] = await Promise.all([
+  const [todayCount, pendingCount, pendingQuotesCount, weekReservations, monthRevenue, recent] = await Promise.all([
     prisma.reservation.count({ where: { date: todayStr } }),
     prisma.reservation.count({ where: { status: 'pending' } }),
+    prisma.quote.count({ where: { status: 'pending' } }),
     prisma.reservation.findMany({
       where: { date: { gte: weekStartStr, lte: weekEndStr } },
       select: { id: true },
@@ -79,6 +80,8 @@ export default async function AdminDashboard({ params: { locale } }: AdminDashbo
     { label: 'Promotions', href: `/${locale}/admin/promotions`, icon: Tag, desc: 'Rabais et offres spéciales' },
     { label: 'Galerie', href: `/${locale}/admin/gallery`, icon: Images, desc: 'Photos du site' },
     { label: 'Contenu', href: `/${locale}/admin/content`, icon: FileText, desc: 'Héro, témoignages, FAQ' },
+    { label: 'Suppléments', href: `/${locale}/admin/supplements`, icon: Wrench, desc: 'Options additionnelles' },
+    { label: 'Devis', href: `/${locale}/admin/quotes`, icon: CalendarDays, desc: 'Demandes de soumission' },
     { label: 'Paramètres', href: `/${locale}/admin/settings`, icon: Settings, desc: 'Coordonnées et options' },
   ];
 
@@ -110,6 +113,23 @@ export default async function AdminDashboard({ params: { locale } }: AdminDashbo
           <Link
             href={`/${locale}/admin/reservations?status=pending`}
             className="text-yellow-400 text-sm font-medium hover:text-yellow-300 transition-colors whitespace-nowrap"
+          >
+            Voir →
+          </Link>
+        </div>
+      )}
+
+      {/* Pending quotes alert */}
+      {pendingQuotesCount > 0 && (
+        <div className="mb-4 flex items-center gap-3 bg-blue-500/10 border border-blue-500/20 rounded-xl px-5 py-4">
+          <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0" />
+          <p className="text-blue-300 text-sm flex-1">
+            <span className="font-semibold">{pendingQuotesCount} demande{pendingQuotesCount > 1 ? 's' : ''} de devis en attente</span>
+            {' '}— soumission à envoyer.
+          </p>
+          <Link
+            href={`/${locale}/admin/quotes`}
+            className="text-blue-400 text-sm font-medium hover:text-blue-300 transition-colors whitespace-nowrap"
           >
             Voir →
           </Link>

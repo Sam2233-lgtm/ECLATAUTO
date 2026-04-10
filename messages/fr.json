@@ -23,7 +23,8 @@
     "contact": "Contact",
     "reservation": "Réservation",
     "admin": "Admin",
-    "suivi": "Suivre ma réservation"
+    "suivi": "Suivre ma réservation",
+    "devis": "Demander un devis"
   },
   "hero": {
     "badge": "Service à domicile au Québec",
@@ -45,27 +46,57 @@
     "exteriorBasic": {
       "name": "Lavage extérieur de base",
       "description": "Rinçage haute pression, savonnage complet, séchage, nettoyage des vitres et des roues.",
-      "includes": ["Rinçage haute pression", "Savonnage et dégraissage", "Séchage soigneux", "Vitres extérieures", "Roues et enjoliveurs"]
+      "includes": [
+        "Rinçage haute pression",
+        "Savonnage et dégraissage",
+        "Séchage soigneux",
+        "Vitres extérieures",
+        "Roues et enjoliveurs"
+      ]
     },
     "exteriorInterior": {
       "name": "Lavage extérieur + intérieur",
       "description": "Tout le lavage extérieur plus aspirateur complet de l'habitacle, essuyage des surfaces et vitres intérieures.",
-      "includes": ["Tout le lavage extérieur", "Aspirateur complet", "Essuyage des surfaces", "Vitres intérieures", "Désodorisant inclus"]
+      "includes": [
+        "Tout le lavage extérieur",
+        "Aspirateur complet",
+        "Essuyage des surfaces",
+        "Vitres intérieures",
+        "Désodorisant inclus"
+      ]
     },
     "shampoo": {
       "name": "Shampooing sièges et tapis",
       "description": "Nettoyage en profondeur des sièges (tissu ou cuir), extraction et shampooinage des tapis, désodorisant.",
-      "includes": ["Sièges tissu ou cuir", "Tapis extraits et shampooinés", "Plancher nettoyé", "Traitement anti-taches", "Désodorisant professionnel"]
+      "includes": [
+        "Sièges tissu ou cuir",
+        "Tapis extraits et shampooinés",
+        "Plancher nettoyé",
+        "Traitement anti-taches",
+        "Désodorisant professionnel"
+      ]
     },
     "decontamination": {
       "name": "Décontamination",
       "description": "Déferrisation, décontamination chimique complète de la carrosserie et protection temporaire.",
-      "includes": ["Déferrisation complète", "Décontamination chimique", "Argile décontaminante", "Rinçage final", "Protection temporaire"]
+      "includes": [
+        "Déferrisation complète",
+        "Décontamination chimique",
+        "Argile décontaminante",
+        "Rinçage final",
+        "Protection temporaire"
+      ]
     },
     "paintProtection": {
       "name": "Protection peinture",
       "description": "Application de cire ou sealant professionnel, protection UV longue durée et brillance incomparable.",
-      "includes": ["Polish léger", "Application de cire premium", "Protection UV", "Brillance longue durée", "Hydrophobicité améliorée"]
+      "includes": [
+        "Polish léger",
+        "Application de cire premium",
+        "Protection UV",
+        "Brillance longue durée",
+        "Hydrophobicité améliorée"
+      ]
     }
   },
   "whyUs": {
