@@ -61,15 +61,13 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Send emails (non-blocking — don't fail reservation if email fails)
-    const serviceName = data.service; // We'll use the ID; the email will show it as-is
     const emailData = {
       confirmationNumber,
       firstName: data.firstName,
       lastName: data.lastName,
       email: data.email,
       phone: data.phone,
-      service: serviceName,
+      service: data.service,
       vehicleType: data.vehicleType,
       vehicleMake: data.vehicleMake,
       vehicleModel: data.vehicleModel,
@@ -85,10 +83,15 @@ export async function POST(req: NextRequest) {
       locale: data.locale,
     };
 
-    Promise.all([
-      sendConfirmationEmail(emailData, settings.adminEmail, settings.confirmationMessage),
-      sendAdminNotificationEmail(emailData, settings.adminEmail),
-    ]).catch((err) => console.error('[Email error]', err));
+    // Await emails — serverless functions terminate on return, fire-and-forget won't work
+    try {
+      await Promise.all([
+        sendConfirmationEmail(emailData, settings.adminEmail, settings.confirmationMessage),
+        sendAdminNotificationEmail(emailData, settings.adminEmail),
+      ]);
+    } catch (err) {
+      console.error('[Email error]', err);
+    }
 
     return NextResponse.json({ success: true, id: reservation.id, confirmationNumber }, { status: 201 });
   } catch (error) {
