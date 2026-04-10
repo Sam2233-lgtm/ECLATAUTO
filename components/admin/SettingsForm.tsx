@@ -126,7 +126,7 @@ export default function SettingsForm({ initialSettings }: { initialSettings: Sit
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.message ?? 'Erreur');
+        throw new Error(data.error ?? data.message ?? 'Erreur');
       }
       setPwSaved(true);
       setPwForm({ currentPassword: '', newPassword: '', confirmNewPassword: '' });
