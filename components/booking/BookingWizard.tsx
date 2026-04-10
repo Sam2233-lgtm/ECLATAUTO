@@ -3,12 +3,18 @@
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Check, MapPin } from 'lucide-react';
-import { VEHICLE_TYPES, VEHICLE_TYPE_LABELS, TIME_SLOTS, getPriceForVehicle, type VehicleType } from '@/lib/constants';
+import { TIME_SLOTS } from '@/lib/constants';
 import { calcPromoPrice, type DbService } from '@/lib/db-services';
+
+interface VehicleCategory {
+  id: string;
+  nameFr: string;
+  nameEn: string;
+}
 
 interface BookingData {
   service: string;
-  vehicleType: VehicleType | '';
+  vehicleType: string; // stores category nameFr as snapshot
   vehicleMake: string;
   vehicleModel: string;
   vehicleYear: string;
@@ -51,17 +57,27 @@ interface BlockedDate {
   timeSlot: string | null;
 }
 
-function getDisplayPrice(
+function getPriceForCategory(
   service: DbService,
-  vehicleType: VehicleType | ''
-): { base: number; promo: number | null } {
-  const base = vehicleType
-    ? getPriceForVehicle(service.basePrice, vehicleType, service.pricing)
-    : service.basePrice;
+  categoryId: string | null
+): { base: number; promo: number | null } | null {
+  if (!categoryId) return null;
+  const pricing = service.pricing as Record<string, number> | null;
+  const base = pricing?.[categoryId];
+  if (!base || base === 0) return null;
   const promo = service.promotion
-    ? Math.round(calcPromoPrice(base, service.promotion))
+    ? parseFloat(calcPromoPrice(base, service.promotion).toFixed(2))
     : null;
   return { base, promo };
+}
+
+function getMinPrice(service: DbService): number {
+  const pricing = service.pricing as Record<string, number> | null;
+  if (pricing) {
+    const values = Object.values(pricing).filter((v) => v > 0);
+    if (values.length > 0) return Math.min(...values);
+  }
+  return service.basePrice;
 }
 
 function isValidEmail(email: string): boolean {
@@ -80,14 +96,17 @@ function isValidPostalCode(code: string): boolean {
 export default function BookingWizard({
   locale,
   services,
+  categories,
 }: {
   locale: string;
   services: DbService[];
+  categories: VehicleCategory[];
 }) {
   const t = useTranslations('booking');
   const tCommon = useTranslations('common');
   const [step, setStep] = useState(0);
   const [data, setData] = useState<BookingData>(INITIAL_DATA);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [confirmedId, setConfirmedId] = useState<string | null>(null);
   const [confirmationNumber, setConfirmationNumber] = useState<string | null>(null);
@@ -168,7 +187,7 @@ export default function BookingWizard({
       case 0:
         return data.service !== '';
       case 1:
-        return data.vehicleType !== '';
+        return selectedCategoryId !== null;
       case 2:
         return (
           data.date !== '' &&
@@ -209,9 +228,9 @@ export default function BookingWizard({
 
     // Compute price to pass to API
     let price: number | undefined;
-    if (selectedService && data.vehicleType) {
-      const prices = getDisplayPrice(selectedService, data.vehicleType as VehicleType);
-      price = prices.promo !== null ? prices.promo : prices.base;
+    if (selectedService && selectedCategoryId) {
+      const prices = getPriceForCategory(selectedService, selectedCategoryId);
+      if (prices) price = prices.promo !== null ? prices.promo : prices.base;
     }
 
     try {
@@ -319,7 +338,7 @@ export default function BookingWizard({
               <div className="space-y-3">
                 {services.map((service) => {
                   const name = isFr ? service.nameFr : service.nameEn;
-                  const prices = getDisplayPrice(service, data.vehicleType);
+                  const prices = selectedCategoryId ? getPriceForCategory(service, selectedCategoryId) : null;
                   const selected = data.service === service.id;
                   return (
                     <button
@@ -343,23 +362,20 @@ export default function BookingWizard({
                       </div>
                       <div className="text-right ml-4">
                         {(() => {
-                          const minPrice = service.pricing
-                            ? Math.min(...Object.values(service.pricing as Record<string, number>).filter(v => v > 0))
-                            : service.basePrice;
-                          const displayMin = isFinite(minPrice) ? minPrice : service.basePrice;
+                          const minPrice = getMinPrice(service);
                           return service.promotion ? (
                             <div>
                               <div className="line-through text-brand-cream-muted text-xs">
-                                {tCommon('currency')}{displayMin}
+                                {tCommon('currency')}{minPrice.toFixed(2)}
                               </div>
                               <div className="text-brand-gold font-bold">
                                 {tCommon('from')} {tCommon('currency')}
-                                {calcPromoPrice(displayMin, service.promotion)}
+                                {calcPromoPrice(minPrice, service.promotion).toFixed(2)}
                               </div>
                             </div>
                           ) : (
                             <div className="text-brand-gold font-bold">
-                              {tCommon('from')} {tCommon('currency')}{displayMin}
+                              {tCommon('from')} {tCommon('currency')}{minPrice.toFixed(2)}
                             </div>
                           );
                         })()}
@@ -379,40 +395,53 @@ export default function BookingWizard({
             <h2 className="text-2xl font-bold text-brand-cream mb-1">{t('vehicle.title')}</h2>
             <p className="text-brand-cream-muted text-sm mb-6">{t('vehicle.subtitle')}</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {VEHICLE_TYPES.map((type) => {
-                const prices = selectedService ? getDisplayPrice(selectedService, type) : null;
+              {categories.map((cat) => {
+                const prices = selectedService ? getPriceForCategory(selectedService, cat.id) : null;
+                const isSelected = selectedCategoryId === cat.id;
+                const unavailable = selectedService && prices === null;
                 return (
                   <button
-                    key={type}
-                    onClick={() => update('vehicleType', type)}
+                    key={cat.id}
+                    onClick={() => {
+                      if (unavailable) return;
+                      setSelectedCategoryId(cat.id);
+                      update('vehicleType', isFr ? cat.nameFr : cat.nameEn);
+                    }}
+                    disabled={!!unavailable}
                     className={`p-4 rounded-xl border transition-all duration-200 text-left
-                      ${
-                        data.vehicleType === type
-                          ? 'border-brand-gold bg-brand-gold/10'
-                          : 'border-brand-black-border hover:border-brand-gold/40 hover:bg-white/5'
+                      ${unavailable
+                        ? 'border-brand-black-border opacity-40 cursor-not-allowed'
+                        : isSelected
+                        ? 'border-brand-gold bg-brand-gold/10'
+                        : 'border-brand-black-border hover:border-brand-gold/40 hover:bg-white/5'
                       }`}
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-semibold text-brand-cream">
-                        {t(`vehicle.${type}` as any)}
+                        {isFr ? cat.nameFr : cat.nameEn}
                       </span>
-                      {data.vehicleType === type && <Check className="w-4 h-4 text-brand-gold" />}
+                      {isSelected && <Check className="w-4 h-4 text-brand-gold" />}
                     </div>
-                    {prices &&
-                      (prices.promo !== null ? (
+                    {unavailable ? (
+                      <span className="text-brand-cream-muted/50 text-xs mt-0.5 block">
+                        {isFr ? 'Non disponible' : 'Not available'}
+                      </span>
+                    ) : prices ? (
+                      prices.promo !== null ? (
                         <div className="mt-0.5">
                           <span className="line-through text-brand-cream-muted text-xs mr-1">
-                            {tCommon('currency')}{prices.base}
+                            {tCommon('currency')}{prices.base.toFixed(2)}
                           </span>
                           <span className="text-brand-gold text-sm font-bold">
-                            {tCommon('currency')}{prices.promo}
+                            {tCommon('currency')}{prices.promo.toFixed(2)}
                           </span>
                         </div>
                       ) : (
                         <span className="text-brand-gold text-sm mt-0.5 block font-bold">
-                          {tCommon('currency')}{prices.base}
+                          {tCommon('currency')}{prices.base.toFixed(2)}
                         </span>
-                      ))}
+                      )
+                    ) : null}
                   </button>
                 );
               })}
@@ -741,9 +770,10 @@ export default function BookingWizard({
 
             {/* Price estimate */}
             {selectedService &&
-              data.vehicleType &&
+              selectedCategoryId &&
               (() => {
-                const prices = getDisplayPrice(selectedService, data.vehicleType as VehicleType);
+                const prices = getPriceForCategory(selectedService, selectedCategoryId);
+                if (!prices) return null;
                 return (
                   <div className="bg-brand-gold/10 border border-brand-gold/20 rounded-xl p-4 mb-6">
                     <div className="flex items-center justify-between">
@@ -752,12 +782,12 @@ export default function BookingWizard({
                         {prices.promo !== null ? (
                           <div>
                             <span className="line-through text-brand-cream-muted text-sm mr-2">
-                              ~${prices.base}
+                              ~${prices.base.toFixed(2)}
                             </span>
-                            <span className="text-brand-gold font-bold text-xl">~${prices.promo}</span>
+                            <span className="text-brand-gold font-bold text-xl">~${prices.promo.toFixed(2)}</span>
                           </div>
                         ) : (
-                          <span className="text-brand-gold font-bold text-xl">~${prices.base}</span>
+                          <span className="text-brand-gold font-bold text-xl">~${prices.base.toFixed(2)}</span>
                         )}
                       </div>
                     </div>

@@ -4,17 +4,13 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Pencil, Trash2, Eye, EyeOff, Check, X, GripVertical } from 'lucide-react';
 
-type VehicleType = 'compact' | 'sedan' | 'suv' | 'truck' | 'van';
-
-const VEHICLE_LABELS: Record<VehicleType, string> = {
-  compact: 'Compacte',
-  sedan:   'Berline',
-  suv:     'VUS / Crossover',
-  truck:   'Camion',
-  van:     'Fourgonnette / Minivan',
-};
-
-const VEHICLE_TYPES: VehicleType[] = ['compact', 'sedan', 'suv', 'truck', 'van'];
+interface VehicleCategory {
+  id: string;
+  nameFr: string;
+  nameEn: string;
+  order: number;
+  active: boolean;
+}
 
 interface Service {
   id: string;
@@ -25,26 +21,22 @@ interface Service {
   includesFr: string;
   includesEn: string;
   basePrice: number;
-  pricing: Record<VehicleType, number> | null;
+  pricing: Record<string, number> | null;
   duration: number;
   active: boolean;
   order: number;
   iconName: string;
 }
 
-const EMPTY_PRICING: Record<VehicleType, number> = {
-  compact: 0, sedan: 0, suv: 0, truck: 0, van: 0,
-};
-
 const EMPTY_SERVICE: Omit<Service, 'id'> = {
   nameFr: '', nameEn: '', descriptionFr: '', descriptionEn: '',
-  includesFr: '', includesEn: '', basePrice: 0, pricing: { ...EMPTY_PRICING },
+  includesFr: '', includesEn: '', basePrice: 0, pricing: {},
   duration: 60, active: true, order: 0, iconName: 'Sparkles',
 };
 
 const ICON_OPTIONS = ['Droplets', 'Sparkles', 'Wind', 'Shield', 'Star', 'Car', 'Zap', 'Award'];
 
-export default function ServicesManager({ initialServices }: { initialServices: Service[] }) {
+export default function ServicesManager({ initialServices, categories }: { initialServices: Service[]; categories: VehicleCategory[] }) {
   const router = useRouter();
   const [services, setServices] = useState<Service[]>(initialServices);
   const [editing, setEditing] = useState<Service | null>(null);
@@ -55,10 +47,7 @@ export default function ServicesManager({ initialServices }: { initialServices: 
 
   function openEdit(service: Service) {
     setEditing(service);
-    setForm({
-      ...service,
-      pricing: service.pricing ?? { ...EMPTY_PRICING },
-    });
+    setForm({ ...service, pricing: service.pricing ?? {} });
     setCreating(false);
     setError('');
   }
@@ -76,10 +65,10 @@ export default function ServicesManager({ initialServices }: { initialServices: 
     setError('');
   }
 
-  function updatePricing(type: VehicleType, value: number) {
+  function updatePricing(categoryId: string, value: number) {
     setForm((prev) => ({
       ...prev,
-      pricing: { ...(prev.pricing ?? EMPTY_PRICING), [type]: value },
+      pricing: { ...(prev.pricing ?? {}), [categoryId]: value },
     }));
   }
 
@@ -88,10 +77,10 @@ export default function ServicesManager({ initialServices }: { initialServices: 
       setError('Les champs nom (FR/EN) et durée sont requis.');
       return;
     }
-    const pricing = form.pricing ?? EMPTY_PRICING;
+    const pricing = form.pricing ?? {};
     const hasAnyPrice = Object.values(pricing).some((v) => v > 0);
     if (!hasAnyPrice) {
-      setError('Veuillez entrer au moins un prix pour un type de véhicule.');
+      setError('Veuillez entrer au moins un prix pour une catégorie de véhicule.');
       return;
     }
     // basePrice = minimum non-zero price for backward compatibility
@@ -189,28 +178,38 @@ export default function ServicesManager({ initialServices }: { initialServices: 
               <textarea className="input-dark resize-none font-mono text-sm" rows={5} value={form.includesEn} onChange={(e) => setForm({ ...form, includesEn: e.target.value })} placeholder="High-pressure rinse&#10;Soap wash & degreasing&#10;..." />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-xs font-medium text-brand-cream-muted mb-3">
-                Prix par type de véhicule ($) *
-                <span className="ml-2 text-brand-cream-muted/60 font-normal">— entrez 0 pour masquer un type</span>
+              <label className="block text-xs font-medium text-brand-cream-muted mb-1">
+                Prix par catégorie de véhicule ($) *
               </label>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-                {VEHICLE_TYPES.map((type) => (
-                  <div key={type}>
-                    <label className="block text-xs text-brand-cream-muted/70 mb-1">{VEHICLE_LABELS[type]}</label>
-                    <div className="relative">
-                      <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-brand-gold text-sm font-bold">$</span>
-                      <input
-                        type="number"
-                        className="input-dark pl-6"
-                        value={(form.pricing ?? EMPTY_PRICING)[type] || ''}
-                        onChange={(e) => updatePricing(type, parseInt(e.target.value) || 0)}
-                        min={0}
-                        placeholder="0"
-                      />
+              <p className="text-brand-cream-muted/50 text-xs mb-3">
+                Laissez 0 ou vide pour ne pas offrir ce service à cette catégorie.
+                Gérez les catégories dans <strong className="text-brand-cream-muted">Admin → Véhicules</strong>.
+              </p>
+              {categories.filter((c) => c.active).length === 0 ? (
+                <p className="text-yellow-400 text-sm">Aucune catégorie active. Ajoutez-en dans Admin → Véhicules.</p>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                  {categories.filter((c) => c.active).map((cat) => (
+                    <div key={cat.id}>
+                      <label className="block text-xs text-brand-cream-muted/70 mb-1 truncate" title={cat.nameFr}>
+                        {cat.nameFr}
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-brand-gold text-sm font-bold">$</span>
+                        <input
+                          type="number"
+                          className="input-dark pl-6"
+                          value={(form.pricing ?? {})[cat.id] ?? ''}
+                          onChange={(e) => updatePricing(cat.id, parseFloat(e.target.value) || 0)}
+                          min={0}
+                          step="0.01"
+                          placeholder="0.00"
+                        />
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
             <div>
               <label className="block text-xs font-medium text-brand-cream-muted mb-1.5">Durée (minutes) *</label>
@@ -264,18 +263,20 @@ export default function ServicesManager({ initialServices }: { initialServices: 
               </div>
               <div className="text-brand-cream-muted text-sm mt-0.5 truncate">{service.descriptionFr}</div>
             </div>
-            <div className="text-right flex-shrink-0 hidden sm:block">
-              {service.pricing ? (
+            <div className="text-right flex-shrink-0 hidden sm:block min-w-[140px]">
+              {service.pricing && Object.keys(service.pricing).length > 0 ? (
                 <div className="text-xs text-brand-cream-muted space-y-0.5">
-                  {VEHICLE_TYPES.filter((t) => (service.pricing as Record<string, number>)[t] > 0).map((t) => (
-                    <div key={t} className="flex justify-between gap-3">
-                      <span>{VEHICLE_LABELS[t]}</span>
-                      <span className="text-brand-gold font-semibold">${(service.pricing as Record<string, number>)[t]}</span>
-                    </div>
-                  ))}
+                  {categories
+                    .filter((c) => service.pricing && (service.pricing as Record<string, number>)[c.id] > 0)
+                    .map((c) => (
+                      <div key={c.id} className="flex justify-between gap-3">
+                        <span className="truncate max-w-[80px]" title={c.nameFr}>{c.nameFr}</span>
+                        <span className="text-brand-gold font-semibold">${(service.pricing as Record<string, number>)[c.id].toFixed(2)}</span>
+                      </div>
+                    ))}
                 </div>
               ) : (
-                <div className="text-brand-gold font-bold text-lg">${service.basePrice}</div>
+                <div className="text-brand-gold font-bold text-lg">${service.basePrice.toFixed(2)}</div>
               )}
               <div className="text-brand-cream-muted text-xs mt-1">{service.duration} min</div>
             </div>

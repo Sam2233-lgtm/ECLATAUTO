@@ -9,6 +9,15 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+model VehicleCategory {
+  id        String   @id @default(cuid())
+  nameFr    String
+  nameEn    String
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
 model Reservation {
   id                 String   @id @default(cuid())
   confirmationNumber String?  @unique
@@ -29,7 +38,7 @@ model Reservation {
   postalCode         String
   notes              String?
   internalNote       String?
-  price              Int      @default(0)
+  price              Float    @default(0)
   status             String   @default("pending")
   locale             String   @default("fr")
   createdAt          DateTime @default(now())
@@ -52,8 +61,8 @@ model Service {
   descriptionEn String
   includesFr    String             @default("")
   includesEn    String             @default("")
-  basePrice     Int
-  pricing       Json?              // {"compact": 49, "sedan": 49, "suv": 59, "truck": 65, "van": 69}
+  basePrice     Float  @default(0)
+  pricing       Json?              // { "categoryId": 179.99, ... }
   duration      Int
   active        Boolean            @default(true)
   order         Int                @default(0)

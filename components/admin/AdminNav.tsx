@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
-import { LayoutDashboard, CalendarDays, LogOut, Settings, Images, Tag, Wrench, FileText, CalendarX } from 'lucide-react';
+import { LayoutDashboard, CalendarDays, LogOut, Settings, Images, Tag, Wrench, FileText, CalendarX, Car } from 'lucide-react';
 import type { Session } from 'next-auth';
 
 interface AdminNavProps {
@@ -18,6 +18,7 @@ export default function AdminNav({ locale, session }: AdminNavProps) {
     { label: 'Dashboard', href: `/${locale}/admin`, icon: LayoutDashboard, exact: true },
     { label: locale === 'fr' ? 'Réservations' : 'Reservations', href: `/${locale}/admin/reservations`, icon: CalendarDays },
     { label: 'Services', href: `/${locale}/admin/services`, icon: Wrench },
+    { label: locale === 'fr' ? 'Véhicules' : 'Vehicles', href: `/${locale}/admin/vehicle-categories`, icon: Car },
     { label: 'Promotions', href: `/${locale}/admin/promotions`, icon: Tag },
     { label: 'Galerie', href: `/${locale}/admin/gallery`, icon: Images },
     { label: locale === 'fr' ? 'Contenu' : 'Content', href: `/${locale}/admin/content`, icon: FileText },

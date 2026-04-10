@@ -11,7 +11,10 @@ export async function generateMetadata() {
 
 export default async function AdminServicesPage({ params: { locale } }: { params: { locale: string } }) {
   setRequestLocale(locale);
-  const rawServices = await prisma.service.findMany({ orderBy: { order: 'asc' } });
+  const [rawServices, categories] = await Promise.all([
+    prisma.service.findMany({ orderBy: { order: 'asc' } }),
+    prisma.vehicleCategory.findMany({ orderBy: { order: 'asc' } }),
+  ]);
   const services = rawServices.map((s) => ({
     ...s,
     pricing: (s.pricing as Record<string, number> | null) ?? null,
@@ -23,7 +26,7 @@ export default async function AdminServicesPage({ params: { locale } }: { params
         <h1 className="text-3xl font-bold text-brand-cream">Services</h1>
         <p className="text-brand-cream-muted mt-1">{services.length} service{services.length !== 1 ? 's' : ''} configuré{services.length !== 1 ? 's' : ''}</p>
       </div>
-      <ServicesManager initialServices={services} />
+      <ServicesManager initialServices={services} categories={categories} />
     </AdminShell>
   );
 }
