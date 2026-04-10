@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
-import { LayoutDashboard, CalendarDays, LogOut, Settings, Images, Tag, Wrench, FileText, CalendarX, Car } from 'lucide-react';
+import { LayoutDashboard, CalendarDays, LogOut, Settings, Images, Tag, Wrench, FileText, CalendarX, Car, PlusCircle, ClipboardList } from 'lucide-react';
 import type { Session } from 'next-auth';
 
 interface AdminNavProps {
@@ -18,8 +18,10 @@ export default function AdminNav({ locale, session }: AdminNavProps) {
     { label: 'Dashboard', href: `/${locale}/admin`, icon: LayoutDashboard, exact: true },
     { label: locale === 'fr' ? 'Réservations' : 'Reservations', href: `/${locale}/admin/reservations`, icon: CalendarDays },
     { label: 'Services', href: `/${locale}/admin/services`, icon: Wrench },
+    { label: locale === 'fr' ? 'Suppléments' : 'Supplements', href: `/${locale}/admin/supplements`, icon: PlusCircle },
     { label: locale === 'fr' ? 'Véhicules' : 'Vehicles', href: `/${locale}/admin/vehicle-categories`, icon: Car },
     { label: 'Promotions', href: `/${locale}/admin/promotions`, icon: Tag },
+    { label: locale === 'fr' ? 'Devis' : 'Quotes', href: `/${locale}/admin/quotes`, icon: ClipboardList },
     { label: 'Galerie', href: `/${locale}/admin/gallery`, icon: Images },
     { label: locale === 'fr' ? 'Contenu' : 'Content', href: `/${locale}/admin/content`, icon: FileText },
     { label: locale === 'fr' ? 'Dates bloquées' : 'Blocked Dates', href: `/${locale}/admin/blocked-dates`, icon: CalendarX },
