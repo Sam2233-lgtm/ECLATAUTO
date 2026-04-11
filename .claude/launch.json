@@ -3,7 +3,7 @@
   "configurations": [
     {
       "name": "eclat-auto",
-      "runtimeExecutable": "/Users/samuellapointe/.nvm/versions/node/v24.14.1/bin/npm",
+      "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
       "port": 3000
     }

@@ -92,11 +92,11 @@ export default async function Footer({ locale }: FooterProps) {
             <ul className="space-y-3">
               <li className="flex items-center gap-3 text-sm text-brand-cream-muted">
                 <Phone className="w-4 h-4 text-brand-gold flex-shrink-0" />
-                <span>{settings.phone}</span>
+                <a href={`tel:${(settings.phone || '').replace(/\s/g, '')}`} className="hover:text-brand-gold transition-colors">{settings.phone}</a>
               </li>
               <li className="flex items-center gap-3 text-sm text-brand-cream-muted">
                 <Mail className="w-4 h-4 text-brand-gold flex-shrink-0" />
-                <span>{settings.email}</span>
+                <a href={`mailto:${settings.email}`} className="hover:text-brand-gold transition-colors">{settings.email}</a>
               </li>
               <li className="flex items-start gap-3 text-sm text-brand-cream-muted">
                 <MapPin className="w-4 h-4 text-brand-gold flex-shrink-0 mt-0.5" />

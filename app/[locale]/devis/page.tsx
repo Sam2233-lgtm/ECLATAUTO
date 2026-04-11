@@ -12,6 +12,9 @@ interface DevisPageProps {
 export async function generateMetadata({ params: { locale } }: DevisPageProps) {
   return {
     title: locale === 'fr' ? 'Demande de devis — Éclat Auto' : 'Request a Quote — Éclat Auto',
+    description: locale === 'fr'
+      ? 'Obtenez une soumission gratuite pour votre service de détailing automobile. Réponse sous 24h.'
+      : 'Get a free quote for your auto detailing service. Response within 24 hours.',
   };
 }
 

@@ -5,16 +5,20 @@ import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { Phone, Mail, Clock, MapPin, ArrowRight } from 'lucide-react';
 
-export default function ContactCTA() {
+interface ContactCTAProps {
+  phone: string;
+  email: string;
+}
+
+export default function ContactCTA({ phone, email }: ContactCTAProps) {
   const t = useTranslations('contact');
-  const tCommon = useTranslations('common');
   const { locale } = useParams();
 
   const contactInfo = [
-    { icon: Phone, label: t('phone'), value: '514-555-0100' },
-    { icon: Mail, label: t('email'), value: 'info@eclatauto.ca' },
-    { icon: Clock, label: t('hours'), value: t('hoursValue') },
-    { icon: MapPin, label: t('zone'), value: t('zoneValue') },
+    { icon: Phone, label: t('phone'), value: phone, href: `tel:${phone.replace(/\s/g, '')}` },
+    { icon: Mail, label: t('email'), value: email, href: `mailto:${email}` },
+    { icon: Clock, label: t('hours'), value: t('hoursValue'), href: null },
+    { icon: MapPin, label: t('zone'), value: t('zoneValue'), href: null },
   ];
 
   return (
@@ -43,7 +47,7 @@ export default function ContactCTA() {
 
           {/* Right: Contact info cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {contactInfo.map(({ icon: Icon, label, value }) => (
+            {contactInfo.map(({ icon: Icon, label, value, href }) => (
               <div
                 key={label}
                 className="card-dark p-5 flex items-start gap-4 hover:border-brand-gold/30 transition-all"
@@ -53,7 +57,13 @@ export default function ContactCTA() {
                 </div>
                 <div>
                   <div className="text-brand-cream-muted text-xs mb-0.5">{label}</div>
-                  <div className="text-brand-cream text-sm font-medium">{value}</div>
+                  {href ? (
+                    <a href={href} className="text-brand-cream text-sm font-medium hover:text-brand-gold transition-colors">
+                      {value}
+                    </a>
+                  ) : (
+                    <div className="text-brand-cream text-sm font-medium">{value}</div>
+                  )}
                 </div>
               </div>
             ))}

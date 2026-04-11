@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   keywords: ['détailing automobile', 'lavage voiture', 'détailing mobile', 'Montréal', 'Québec'],
   authors: [{ name: 'Éclat Auto' }],
   creator: 'Éclat Auto',
-  metadataBase: new URL('https://eclatauto.ca'),
+  metadataBase: new URL(process.env.NEXTAUTH_URL ?? 'https://eclatautoqc.netlify.app'),
   openGraph: {
     type: 'website',
     locale: 'fr_CA',

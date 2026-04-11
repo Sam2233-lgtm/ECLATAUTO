@@ -55,7 +55,8 @@ function isValidPhone(phone: string): boolean {
   return phone.replace(/\D/g, '').length >= 10;
 }
 function isValidPostalCode(code: string): boolean {
-  return /^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/i.test(code);
+  const clean = code.replace(/[\s\-]/g, '');
+  return /^[A-Z]\d[A-Z]\d[A-Z]\d$/i.test(clean);
 }
 
 const STEP_LABELS = ['Véhicule', 'Service', 'Suppléments', 'Date & heure', 'Coordonnées', 'Confirmation'];
@@ -422,7 +423,7 @@ export default function BookingWizard({
             <h2 className="text-2xl font-bold text-brand-cream mb-1">{isFr ? 'Vos coordonnées' : 'Your contact info'}</h2>
             <p className="text-brand-cream-muted text-sm mb-6">{isFr ? "Nous venons à votre adresse — assurez-vous qu'elle est correcte." : "We come to your address — make sure it's correct."}</p>
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-brand-cream-muted mb-1.5">{isFr ? 'Prénom *' : 'First name *'}</label>
                   <input className="input-dark" value={contact.firstName} onChange={e => setContact(c => ({...c, firstName: e.target.value}))} />
@@ -432,7 +433,7 @@ export default function BookingWizard({
                   <input className="input-dark" value={contact.lastName} onChange={e => setContact(c => ({...c, lastName: e.target.value}))} />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-brand-cream-muted mb-1.5">{isFr ? 'Téléphone *' : 'Phone *'}</label>
                   <input className="input-dark" value={contact.phone} onChange={e => { setContact(c => ({...c, phone: e.target.value})); setFieldErrors(p => { const n = {...p}; delete n.phone; return n; }); }} placeholder="514-555-0000" />
@@ -448,7 +449,7 @@ export default function BookingWizard({
                 <label className="block text-xs font-medium text-brand-cream-muted mb-1.5">{isFr ? 'Adresse de service *' : 'Service address *'}</label>
                 <input className="input-dark" value={contact.address} onChange={e => setContact(c => ({...c, address: e.target.value}))} placeholder="123 rue Principale" />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-brand-cream-muted mb-1.5">{isFr ? 'Ville *' : 'City *'}</label>
                   <input className="input-dark" value={contact.city} onChange={e => setContact(c => ({...c, city: e.target.value}))} />
