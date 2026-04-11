@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { Check, ChevronRight, ChevronLeft } from 'lucide-react';
 import { TIME_SLOTS } from '@/lib/constants';
@@ -72,6 +72,7 @@ export default function BookingWizard({
   const tCommon = useTranslations('common');
   const isFr = locale === 'fr';
 
+  const wizardRef = useRef<HTMLDivElement>(null);
   const [step, setStep] = useState(0);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [selectedCategoryName, setSelectedCategoryName] = useState('');
@@ -100,6 +101,11 @@ export default function BookingWizard({
     : 0;
   const supplementsTotal = selectedSupplements.reduce((sum, s) => sum + s.price, 0);
   const total = parseFloat((finalServicePrice + supplementsTotal).toFixed(2));
+
+  // Scroll wizard to top on every step change
+  useEffect(() => {
+    wizardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [step]);
 
   useEffect(() => {
     fetch('/api/public/supplements').then(r => r.json()).then(d => { if (Array.isArray(d)) setSupplements(d); }).catch(() => {});
@@ -231,7 +237,7 @@ export default function BookingWizard({
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-2xl mx-auto" ref={wizardRef}>
       {/* Progress */}
       <div className="flex items-center justify-between mb-10 px-2 overflow-x-auto">
         {STEP_LABELS.map((label, index) => (
@@ -522,7 +528,7 @@ export default function BookingWizard({
         )}
 
         {/* Navigation */}
-        <div className="flex items-center justify-between mt-8">
+        <div className="flex items-center justify-between mt-8 sticky bottom-4 z-10 bg-brand-black/90 backdrop-blur-sm rounded-2xl px-4 py-3 md:static md:bg-transparent md:backdrop-blur-none md:rounded-none md:px-0 md:py-0">
           <button onClick={() => setStep(s => s - 1)} disabled={step === 0}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${step === 0 ? 'opacity-0 pointer-events-none' : 'btn-ghost'}`}>
             <ChevronLeft className="w-4 h-4" />
