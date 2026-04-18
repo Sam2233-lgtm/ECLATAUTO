@@ -109,7 +109,7 @@ export default async function Footer({ locale }: FooterProps) {
         {/* Bottom bar */}
         <div className="mt-12 pt-6 border-t border-brand-black-border flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-brand-cream-muted/50 text-xs">
-            © {new Date().getFullYear()} Éclat Auto. {t('rights')}. {t('madeIn')} 🍁
+            © {new Date().getFullYear()} Éclat Auto. {t('rights')}. {t('madeIn')}
           </p>
           <div className="flex gap-4">
             <Link href="#" className="text-brand-cream-muted/50 hover:text-brand-cream-muted text-xs transition-colors">{t('privacy')}</Link>

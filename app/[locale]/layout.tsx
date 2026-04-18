@@ -3,6 +3,7 @@ import { getMessages } from 'next-intl/server';
 import { setRequestLocale } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { locales } from '@/i18n';
+import MobileBookingButton from '@/components/MobileBookingButton';
 
 interface LocaleLayoutProps {
   children: React.ReactNode;
@@ -37,7 +38,10 @@ export default async function LocaleLayout({
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
-      {children}
+      <div className="pb-20 md:pb-0">
+        {children}
+      </div>
+      <MobileBookingButton locale={locale} />
     </NextIntlClientProvider>
   );
 }

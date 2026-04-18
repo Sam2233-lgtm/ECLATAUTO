@@ -64,7 +64,7 @@ export default async function Hero({ locale }: HeroProps) {
         </div>
 
         {/* CTAs */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 animate-fade-in">
+        <div className="flex flex-col items-center justify-center gap-4 mb-16 animate-fade-in">
           <Link
             href={`/${locale}/reservation`}
             className="btn-gold flex items-center gap-2 text-base px-8 py-4"
@@ -74,7 +74,7 @@ export default async function Hero({ locale }: HeroProps) {
           </Link>
           <Link
             href={`/${locale}#services`}
-            className="btn-outline-gold text-base px-8 py-4"
+            className="text-brand-cream-muted hover:text-brand-gold text-sm transition-colors underline-offset-4 hover:underline"
           >
             {isFr ? 'Voir nos services' : 'View Our Services'}
           </Link>
