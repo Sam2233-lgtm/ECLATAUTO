@@ -1,4 +1,5 @@
 import { prisma } from './prisma';
+import { unstable_cache } from 'next/cache';
 
 export interface ActivePromotion {
   id: string;
@@ -24,50 +25,54 @@ export interface DbService {
   promotion: ActivePromotion | null;
 }
 
-export async function getActiveServicesWithPromos(): Promise<DbService[]> {
-  const now = new Date();
-  const services = await prisma.service.findMany({
-    where: { active: true },
-    orderBy: { order: 'asc' },
-    include: {
-      promotions: {
-        include: { promotion: true },
-        where: {
-          promotion: {
-            active: true,
-            startDate: { lte: now },
-            endDate: { gte: now },
+export const getActiveServicesWithPromos = unstable_cache(
+  async (): Promise<DbService[]> => {
+    const now = new Date();
+    const services = await prisma.service.findMany({
+      where: { active: true },
+      orderBy: { order: 'asc' },
+      include: {
+        promotions: {
+          include: { promotion: true },
+          where: {
+            promotion: {
+              active: true,
+              startDate: { lte: now },
+              endDate: { gte: now },
+            },
           },
+          take: 1,
         },
-        take: 1,
       },
-    },
-  });
+    });
 
-  return services.map((s) => ({
-    id: s.id,
-    nameFr: s.nameFr,
-    nameEn: s.nameEn,
-    descriptionFr: s.descriptionFr,
-    descriptionEn: s.descriptionEn,
-    includesFr: s.includesFr,
-    includesEn: s.includesEn,
-    basePrice: s.basePrice,
-    pricing: s.pricing as Record<string, number> | null,
-    duration: s.duration,
-    active: s.active,
-    order: s.order,
-    iconName: s.iconName,
-    promotion: s.promotions[0]?.promotion
-      ? {
-          id: s.promotions[0].promotion.id,
-          name: s.promotions[0].promotion.name,
-          discountType: s.promotions[0].promotion.discountType,
-          discountValue: s.promotions[0].promotion.discountValue,
-        }
-      : null,
-  }));
-}
+    return services.map((s) => ({
+      id: s.id,
+      nameFr: s.nameFr,
+      nameEn: s.nameEn,
+      descriptionFr: s.descriptionFr,
+      descriptionEn: s.descriptionEn,
+      includesFr: s.includesFr,
+      includesEn: s.includesEn,
+      basePrice: s.basePrice,
+      pricing: s.pricing as Record<string, number> | null,
+      duration: s.duration,
+      active: s.active,
+      order: s.order,
+      iconName: s.iconName,
+      promotion: s.promotions[0]?.promotion
+        ? {
+            id: s.promotions[0].promotion.id,
+            name: s.promotions[0].promotion.name,
+            discountType: s.promotions[0].promotion.discountType,
+            discountValue: s.promotions[0].promotion.discountValue,
+          }
+        : null,
+    }));
+  },
+  ['active-services'],
+  { revalidate: 300, tags: ['services'] } // 5 min cache
+);
 
 export function calcPromoPrice(basePrice: number, promo: ActivePromotion): number {
   if (promo.discountType === 'percentage') {
@@ -76,36 +81,53 @@ export function calcPromoPrice(basePrice: number, promo: ActivePromotion): numbe
   return Math.max(0, basePrice - promo.discountValue);
 }
 
-export async function getSiteSettings() {
-  return prisma.siteSettings.upsert({
-    where: { id: 'singleton' },
-    update: {},
-    create: { id: 'singleton' },
-  });
-}
+export const getSiteSettings = unstable_cache(
+  async () => {
+    return prisma.siteSettings.upsert({
+      where: { id: 'singleton' },
+      update: {},
+      create: { id: 'singleton' },
+    });
+  },
+  ['site-settings'],
+  { revalidate: 3600, tags: ['settings'] } // 1 hour cache — settings change rarely
+);
 
-export async function getActivePhotos() {
-  return prisma.photo.findMany({
-    where: { active: true },
-    orderBy: { order: 'asc' },
-  });
-}
+export const getActivePhotos = unstable_cache(
+  async () => {
+    return prisma.photo.findMany({
+      where: { active: true },
+      orderBy: { order: 'asc' },
+    });
+  },
+  ['active-photos'],
+  { revalidate: 3600, tags: ['photos'] }
+);
 
-export async function getActiveTestimonials() {
-  return prisma.testimonial.findMany({
-    where: { active: true },
-    orderBy: { order: 'asc' },
-  });
-}
+export const getActiveTestimonials = unstable_cache(
+  async () => {
+    return prisma.testimonial.findMany({
+      where: { active: true },
+      orderBy: { order: 'asc' },
+    });
+  },
+  ['active-testimonials'],
+  { revalidate: 3600, tags: ['testimonials'] }
+);
 
-export async function getActiveFAQs() {
-  return prisma.fAQ.findMany({
-    where: { active: true },
-    orderBy: { order: 'asc' },
-  });
-}
+export const getActiveFAQs = unstable_cache(
+  async () => {
+    return prisma.fAQ.findMany({
+      where: { active: true },
+      orderBy: { order: 'asc' },
+    });
+  },
+  ['active-faqs'],
+  { revalidate: 3600, tags: ['faqs'] }
+);
 
 export async function getBlockedDates() {
+  // No cache — blocked dates change in real time
   return prisma.blockedDate.findMany({
     orderBy: { date: 'asc' },
   });

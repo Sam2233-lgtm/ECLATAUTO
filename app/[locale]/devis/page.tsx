@@ -3,7 +3,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import DevisForm from './DevisForm';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 interface DevisPageProps {
   params: { locale: string };

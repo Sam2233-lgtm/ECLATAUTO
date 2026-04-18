@@ -485,7 +485,7 @@ export default function BookingWizard({
                   value={date}
                   min={new Date(Date.now() + 86400000).toISOString().split('T')[0]}
                   onChange={e => { setDate(e.target.value); setTimeSlot(''); }}
-                  className="input-dark text-base"
+                  className="input-dark text-base w-full [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:opacity-60"
                   style={{ colorScheme: 'dark' }}
                 />
                 {date && fullyBlockedDates.has(date) && (

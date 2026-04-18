@@ -5,7 +5,7 @@ import BookingWizard from '@/components/booking/BookingWizard';
 import { getActiveServicesWithPromos } from '@/lib/db-services';
 import { prisma } from '@/lib/prisma';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300; // Revalidate every 5 minutes (ISR)
 
 interface ReservationPageProps {
   params: { locale: string };
