@@ -149,10 +149,15 @@ export default function BookingWizard({
   function handleNext() {
     if (step === 4) {
       const errors: Record<string, string> = {};
-      if (!isValidEmail(contact.email)) errors.email = isFr ? 'Courriel invalide' : 'Invalid email';
-      if (!isValidPhone(contact.phone)) errors.phone = isFr ? 'Téléphone invalide' : 'Invalid phone';
-      if (!isValidPostalCode(contact.postalCode)) errors.postalCode = isFr ? 'Code postal invalide (ex: H2X 1Y3)' : 'Invalid postal code';
+      const required = ['firstName', 'lastName', 'phone', 'email', 'address', 'city', 'postalCode'] as const;
+      required.forEach(f => {
+        if (!contact[f].trim()) errors[f] = isFr ? 'Ce champ est requis' : 'Required';
+      });
+      if (!errors.email && !isValidEmail(contact.email)) errors.email = isFr ? 'Courriel invalide' : 'Invalid email';
+      if (!errors.phone && !isValidPhone(contact.phone)) errors.phone = isFr ? 'Téléphone invalide (10 chiffres min.)' : 'Invalid phone (min. 10 digits)';
+      if (!errors.postalCode && !isValidPostalCode(contact.postalCode)) errors.postalCode = isFr ? 'Code postal invalide (ex: H2X 1Y3)' : 'Invalid postal code (e.g. H2X 1Y3)';
       if (Object.keys(errors).length > 0) { setFieldErrors(errors); return; }
+      setFieldErrors({});
     }
     setStep(s => s + 1);
   }
@@ -256,7 +261,7 @@ export default function BookingWizard({
         ))}
       </div>
 
-      <div className="card-dark p-6 sm:p-8">
+      <div className="card-dark p-6 sm:p-8 pb-28 md:pb-8">
 
         {/* STEP 0: Vehicle type */}
         {step === 0 && (
@@ -426,11 +431,13 @@ export default function BookingWizard({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-brand-cream-muted mb-1.5">{isFr ? 'Prénom *' : 'First name *'}</label>
-                  <input className="input-dark" value={contact.firstName} onChange={e => setContact(c => ({...c, firstName: e.target.value}))} />
+                  <input className={`input-dark ${fieldErrors.firstName ? 'border-red-500' : ''}`} value={contact.firstName} onChange={e => { setContact(c => ({...c, firstName: e.target.value})); setFieldErrors(p => { const n = {...p}; delete n.firstName; return n; }); }} />
+                  {fieldErrors.firstName && <p className="text-red-400 text-xs mt-1">{fieldErrors.firstName}</p>}
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-brand-cream-muted mb-1.5">{isFr ? 'Nom *' : 'Last name *'}</label>
-                  <input className="input-dark" value={contact.lastName} onChange={e => setContact(c => ({...c, lastName: e.target.value}))} />
+                  <input className={`input-dark ${fieldErrors.lastName ? 'border-red-500' : ''}`} value={contact.lastName} onChange={e => { setContact(c => ({...c, lastName: e.target.value})); setFieldErrors(p => { const n = {...p}; delete n.lastName; return n; }); }} />
+                  {fieldErrors.lastName && <p className="text-red-400 text-xs mt-1">{fieldErrors.lastName}</p>}
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -447,12 +454,14 @@ export default function BookingWizard({
               </div>
               <div>
                 <label className="block text-xs font-medium text-brand-cream-muted mb-1.5">{isFr ? 'Adresse de service *' : 'Service address *'}</label>
-                <input className="input-dark" value={contact.address} onChange={e => setContact(c => ({...c, address: e.target.value}))} placeholder="123 rue Principale" />
+                <input className={`input-dark ${fieldErrors.address ? 'border-red-500' : ''}`} value={contact.address} onChange={e => { setContact(c => ({...c, address: e.target.value})); setFieldErrors(p => { const n = {...p}; delete n.address; return n; }); }} placeholder="123 rue Principale" />
+                {fieldErrors.address && <p className="text-red-400 text-xs mt-1">{fieldErrors.address}</p>}
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-brand-cream-muted mb-1.5">{isFr ? 'Ville *' : 'City *'}</label>
-                  <input className="input-dark" value={contact.city} onChange={e => setContact(c => ({...c, city: e.target.value}))} />
+                  <input className={`input-dark ${fieldErrors.city ? 'border-red-500' : ''}`} value={contact.city} onChange={e => { setContact(c => ({...c, city: e.target.value})); setFieldErrors(p => { const n = {...p}; delete n.city; return n; }); }} />
+                  {fieldErrors.city && <p className="text-red-400 text-xs mt-1">{fieldErrors.city}</p>}
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-brand-cream-muted mb-1.5">{isFr ? 'Code postal *' : 'Postal code *'}</label>
@@ -528,22 +537,27 @@ export default function BookingWizard({
           </div>
         )}
 
-        {/* Navigation */}
-        <div className="flex items-center justify-between mt-8 sticky bottom-4 z-10 bg-brand-black/90 backdrop-blur-sm rounded-2xl px-4 py-3 md:static md:bg-transparent md:backdrop-blur-none md:rounded-none md:px-0 md:py-0">
+        {/* Navigation — fixed on mobile so keyboard never covers it, static on desktop */}
+        <div className="fixed bottom-0 left-0 right-0 z-50 md:static
+                        flex items-center justify-between
+                        bg-brand-black/95 backdrop-blur-md border-t border-brand-black-border
+                        px-4 py-3
+                        md:bg-transparent md:backdrop-blur-none md:border-t-0
+                        md:mt-8 md:px-0 md:py-0">
           <button onClick={() => setStep(s => s - 1)} disabled={step === 0}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${step === 0 ? 'opacity-0 pointer-events-none' : 'btn-ghost'}`}>
+            className={`flex items-center gap-2 px-4 py-3 rounded-lg text-sm font-medium transition-all min-h-[44px] ${step === 0 ? 'opacity-0 pointer-events-none' : 'btn-ghost'}`}>
             <ChevronLeft className="w-4 h-4" />
             {isFr ? 'Retour' : 'Back'}
           </button>
           {step < 5 ? (
-            <button onClick={handleNext} disabled={!canProceed()}
-              className="btn-gold flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed">
+            <button onClick={handleNext} disabled={step !== 4 && !canProceed()}
+              className="btn-gold flex items-center gap-2 min-h-[44px] disabled:opacity-40 disabled:cursor-not-allowed">
               {step === 2 ? (isFr ? 'Continuer' : 'Continue') : (isFr ? 'Suivant' : 'Next')}
               <ChevronRight className="w-4 h-4" />
             </button>
           ) : (
             <button onClick={handleSubmit} disabled={submitting}
-              className="btn-gold flex items-center gap-2 disabled:opacity-60">
+              className="btn-gold flex items-center gap-2 min-h-[44px] disabled:opacity-60">
               {submitting ? <span className="inline-block w-4 h-4 border-2 border-brand-black/30 border-t-brand-black rounded-full animate-spin" /> : <Check className="w-4 h-4" />}
               {isFr ? 'Confirmer la réservation' : 'Confirm booking'}
             </button>
