@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 import { Phone, Mail, MapPin, Instagram, Facebook } from 'lucide-react';
 import { getSiteSettings } from '@/lib/db-services';
@@ -30,14 +31,14 @@ export default async function Footer({ locale }: FooterProps) {
 
           {/* Brand */}
           <div className="max-w-xs">
-            <Link href={`/${locale}`} className="flex items-center gap-2.5 mb-4">
-              <div className="w-8 h-8 bg-brand-gold flex items-center justify-center flex-shrink-0">
-                <span className="font-display text-brand-black text-lg leading-none">É</span>
-              </div>
-              <span className="font-display text-xl tracking-wide">
-                <span className="text-brand-gold">Éclat</span>
-                <span className="text-brand-cream"> Auto</span>
-              </span>
+            <Link href={`/${locale}`} className="inline-flex mb-4">
+              <Image
+                src="/logo.png"
+                alt="Éclat Auto"
+                width={100}
+                height={50}
+                className="h-12 w-auto object-contain"
+              />
             </Link>
             <p className="text-brand-cream-muted/60 text-xs leading-relaxed font-light">
               {t('tagline')}

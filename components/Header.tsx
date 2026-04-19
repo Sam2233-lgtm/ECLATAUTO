@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Menu, X } from 'lucide-react';
+import Image from 'next/image';
 
 interface HeaderProps {
   locale: string;
@@ -45,14 +46,15 @@ export default function Header({ locale }: HeaderProps) {
         <div className="flex items-center justify-between h-20">
 
           {/* Logo */}
-          <Link href={`/${locale}`} className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-brand-gold flex items-center justify-center flex-shrink-0">
-              <span className="font-display text-brand-black text-lg leading-none">É</span>
-            </div>
-            <span className="font-display text-xl tracking-wide">
-              <span className="text-brand-gold">Éclat</span>
-              <span className="text-brand-cream"> Auto</span>
-            </span>
+          <Link href={`/${locale}`} className="flex items-center">
+            <Image
+              src="/logo.png"
+              alt="Éclat Auto"
+              width={120}
+              height={60}
+              className="h-14 w-auto object-contain"
+              priority
+            />
           </Link>
 
           {/* Desktop nav */}
