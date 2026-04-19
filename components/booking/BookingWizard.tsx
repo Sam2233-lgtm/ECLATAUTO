@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
-import { Check, ChevronRight, ChevronLeft, Car, Truck, Bus, CarFront } from 'lucide-react';
+import { Check, ChevronRight, ChevronLeft, Car, Truck, Bus, CarFront, CalendarDays } from 'lucide-react';
 import { TIME_SLOTS } from '@/lib/constants';
 import { calcPromoPrice, type DbService } from '@/lib/db-services';
 
@@ -480,14 +480,27 @@ export default function BookingWizard({
                 <label className="block text-sm font-medium text-brand-cream-muted mb-2">
                   {isFr ? 'Date' : 'Date'}
                 </label>
-                <input
-                  type="date"
-                  value={date}
-                  min={new Date(Date.now() + 86400000).toISOString().split('T')[0]}
-                  onChange={e => { setDate(e.target.value); setTimeSlot(''); }}
-                  className="input-dark text-base w-full [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:opacity-60"
-                  style={{ colorScheme: 'dark' }}
-                />
+                {/* Custom date display + native picker overlay — works on all browsers */}
+                <div className="relative">
+                  <div className="input-dark flex items-center justify-between pointer-events-none select-none">
+                    <span className={date ? 'text-brand-cream font-medium' : 'text-brand-cream-muted/50'}>
+                      {date
+                        ? new Date(date + 'T12:00:00').toLocaleDateString(
+                            isFr ? 'fr-CA' : 'en-CA',
+                            { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }
+                          )
+                        : isFr ? 'Choisir une date...' : 'Choose a date...'}
+                    </span>
+                    <CalendarDays className="w-5 h-5 text-brand-gold flex-shrink-0" />
+                  </div>
+                  <input
+                    type="date"
+                    value={date}
+                    min={new Date(Date.now() + 86400000).toISOString().split('T')[0]}
+                    onChange={e => { setDate(e.target.value); setTimeSlot(''); }}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  />
+                </div>
                 {date && fullyBlockedDates.has(date) && (
                   <p className="text-amber-400 text-sm mt-2">
                     {isFr ? 'Cette date est complète. Choisis une autre.' : 'Date fully booked. Choose another.'}
