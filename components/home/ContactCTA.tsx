@@ -14,55 +14,61 @@ export default function ContactCTA({ phone, email }: ContactCTAProps) {
   const t = useTranslations('contact');
   const { locale } = useParams();
 
-  const contactInfo = [
-    { icon: Phone, label: t('phone'), value: phone, href: `tel:${phone.replace(/\s/g, '')}` },
-    { icon: Mail, label: t('email'), value: email, href: `mailto:${email}` },
-    { icon: Clock, label: t('hours'), value: t('hoursValue'), href: null },
-    { icon: MapPin, label: t('zone'), value: t('zoneValue'), href: null },
-  ];
-
   return (
-    <section id="contact" className="py-24 px-4 bg-brand-black-soft">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          {/* Left: CTA */}
-          <div>
-            <span className="text-brand-gold text-sm font-semibold uppercase tracking-widest">
-              {locale === 'fr' ? 'Prêt à commencer?' : 'Ready to start?'}
-            </span>
-            <h2 className="text-4xl md:text-5xl font-black text-brand-cream mt-2 mb-6 leading-tight">
-              {t('title')}
-            </h2>
-            <p className="text-brand-cream-muted text-lg mb-8 leading-relaxed">
-              {t('subtitle')}
-            </p>
-            <Link
-              href={`/${locale}/reservation`}
-              className="btn-gold inline-flex items-center gap-2 text-base px-8 py-4"
-            >
-              {t('cta')}
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+    <section id="contact" className="bg-brand-black-soft section-pad relative overflow-hidden">
+      {/* Gold glow — bottom right */}
+      <div className="absolute bottom-0 right-0 w-[500px] h-[400px] bg-brand-gold/5 blur-[120px] rounded-full pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto relative z-10">
+        <div className="grid lg:grid-cols-2 gap-0 border border-brand-black-border">
+
+          {/* Left — CTA */}
+          <div className="p-10 lg:p-14 border-b lg:border-b-0 lg:border-r border-brand-black-border flex flex-col justify-between">
+            <div>
+              <span className="eyebrow">
+                {locale === 'fr' ? 'Prêt à commencer?' : 'Ready to start?'}
+              </span>
+              <h2 className="font-display text-[clamp(2.5rem,5vw,4rem)] text-brand-cream mt-4 mb-6 leading-none">
+                {t('title')}
+              </h2>
+              <p className="text-brand-cream-muted text-sm leading-relaxed font-light max-w-sm">
+                {t('subtitle')}
+              </p>
+            </div>
+            <div className="mt-10">
+              <Link
+                href={`/${locale}/reservation`}
+                className="group inline-flex items-center gap-3 bg-brand-gold text-brand-black font-sans font-bold text-sm uppercase tracking-widest px-8 py-4 hover:bg-brand-gold-light transition-colors duration-200"
+              >
+                {t('cta')}
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
           </div>
 
-          {/* Right: Contact info cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {contactInfo.map(({ icon: Icon, label, value, href }) => (
-              <div
-                key={label}
-                className="card-dark p-5 flex items-start gap-4 hover:border-brand-gold/30 transition-all"
-              >
-                <div className="w-10 h-10 bg-brand-gold/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <Icon className="w-5 h-5 text-brand-gold" />
-                </div>
-                <div>
-                  <div className="text-brand-cream-muted text-xs mb-0.5">{label}</div>
+          {/* Right — Contact info */}
+          <div className="divide-y divide-brand-black-border">
+            {[
+              { icon: Phone, label: t('phone'), value: phone, href: `tel:${phone.replace(/\s/g, '')}` },
+              { icon: Mail, label: t('email'), value: email, href: `mailto:${email}` },
+              { icon: Clock, label: t('hours'), value: t('hoursValue'), href: null },
+              { icon: MapPin, label: t('zone'), value: t('zoneValue'), href: null },
+            ].map(({ icon: Icon, label, value, href }) => (
+              <div key={label} className="flex items-center gap-5 px-8 py-6">
+                <Icon className="w-4 h-4 text-brand-gold flex-shrink-0" />
+                <div className="min-w-0">
+                  <div className="text-brand-cream-muted/50 text-[10px] uppercase tracking-widest font-sans mb-0.5">
+                    {label}
+                  </div>
                   {href ? (
-                    <a href={href} className="text-brand-cream text-sm font-medium hover:text-brand-gold transition-colors">
+                    <a
+                      href={href}
+                      className="text-brand-cream text-sm font-sans hover:text-brand-gold transition-colors truncate block"
+                    >
                       {value}
                     </a>
                   ) : (
-                    <div className="text-brand-cream text-sm font-medium">{value}</div>
+                    <div className="text-brand-cream text-sm font-sans">{value}</div>
                   )}
                 </div>
               </div>

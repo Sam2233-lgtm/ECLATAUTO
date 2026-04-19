@@ -22,98 +22,90 @@ export default async function Footer({ locale }: FooterProps) {
   ];
 
   return (
-    <footer className="bg-brand-black-soft border-t border-brand-black-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+    <footer className="bg-brand-black border-t border-brand-black-border">
+      <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 py-16">
+
+        {/* Top — brand + nav */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-12 pb-12 border-b border-brand-black-border">
+
           {/* Brand */}
-          <div className="lg:col-span-1">
-            <Link href={`/${locale}`} className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-brand-gold rounded-md flex items-center justify-center">
-                <span className="text-brand-black font-black text-sm">É</span>
+          <div className="max-w-xs">
+            <Link href={`/${locale}`} className="flex items-center gap-2.5 mb-4">
+              <div className="w-8 h-8 bg-brand-gold flex items-center justify-center flex-shrink-0">
+                <span className="font-display text-brand-black text-lg leading-none">É</span>
               </div>
-              <span className="text-xl font-bold">
+              <span className="font-display text-xl tracking-wide">
                 <span className="text-brand-gold">Éclat</span>
                 <span className="text-brand-cream"> Auto</span>
               </span>
             </Link>
-            <p className="text-brand-cream-muted text-sm leading-relaxed mb-6">{t('tagline')}</p>
-            <div className="flex gap-3">
-              <a
-                href={settings.instagramUrl || '#'}
-                target={settings.instagramUrl ? '_blank' : undefined}
-                rel="noopener noreferrer"
-                className="w-9 h-9 rounded-lg border border-brand-black-border flex items-center justify-center text-brand-cream-muted hover:text-brand-gold hover:border-brand-gold/40 transition-all"
-                aria-label="Instagram"
-              >
-                <Instagram className="w-4 h-4" />
-              </a>
-              <a
-                href={settings.facebookUrl || '#'}
-                target={settings.facebookUrl ? '_blank' : undefined}
-                rel="noopener noreferrer"
-                className="w-9 h-9 rounded-lg border border-brand-black-border flex items-center justify-center text-brand-cream-muted hover:text-brand-gold hover:border-brand-gold/40 transition-all"
-                aria-label="Facebook"
-              >
-                <Facebook className="w-4 h-4" />
-              </a>
+            <p className="text-brand-cream-muted/60 text-xs leading-relaxed font-light">
+              {t('tagline')}
+            </p>
+          </div>
+
+          {/* Nav grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-16 gap-y-8">
+            <div>
+              <div className="eyebrow mb-4">{t('services')}</div>
+              <ul className="space-y-2.5">
+                {serviceLinks.map((s) => (
+                  <li key={s.nameFr}>
+                    <Link href={`/${locale}/reservation`} className="text-brand-cream-muted/60 hover:text-brand-gold text-xs font-sans transition-colors">
+                      {locale === 'fr' ? s.nameFr : s.nameEn}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
-          </div>
 
-          {/* Services */}
-          <div>
-            <h3 className="text-brand-cream font-semibold mb-4">{t('services')}</h3>
-            <ul className="space-y-2">
-              {serviceLinks.map((s) => (
-                <li key={s.nameFr}>
-                  <Link href={`/${locale}/reservation`} className="text-brand-cream-muted hover:text-brand-gold text-sm transition-colors">
-                    {locale === 'fr' ? s.nameFr : s.nameEn}
-                  </Link>
+            <div>
+              <div className="eyebrow mb-4">{t('company')}</div>
+              <ul className="space-y-2.5">
+                <li><Link href={`/${locale}#why-us`} className="text-brand-cream-muted/60 hover:text-brand-gold text-xs font-sans transition-colors">{t('about')}</Link></li>
+                <li><Link href={`/${locale}#contact`} className="text-brand-cream-muted/60 hover:text-brand-gold text-xs font-sans transition-colors">{t('contact')}</Link></li>
+                <li><Link href={`/${locale}/reservation`} className="text-brand-cream-muted/60 hover:text-brand-gold text-xs font-sans transition-colors">{tNav('reservation')}</Link></li>
+              </ul>
+            </div>
+
+            <div>
+              <div className="eyebrow mb-4">{t('contact')}</div>
+              <ul className="space-y-2.5">
+                <li>
+                  <a href={`tel:${(settings.phone || '').replace(/\s/g, '')}`} className="text-brand-cream-muted/60 hover:text-brand-gold text-xs font-sans transition-colors">
+                    {settings.phone}
+                  </a>
                 </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Company */}
-          <div>
-            <h3 className="text-brand-cream font-semibold mb-4">{t('company')}</h3>
-            <ul className="space-y-2">
-              <li><Link href={`/${locale}#why-us`} className="text-brand-cream-muted hover:text-brand-gold text-sm transition-colors">{t('about')}</Link></li>
-              <li><Link href={`/${locale}#contact`} className="text-brand-cream-muted hover:text-brand-gold text-sm transition-colors">{t('contact')}</Link></li>
-              <li><Link href={`/${locale}/reservation`} className="text-brand-cream-muted hover:text-brand-gold text-sm transition-colors">{tNav('reservation')}</Link></li>
-              {settings.instagramUrl && (
-                <li><a href={settings.instagramUrl} target="_blank" rel="noopener noreferrer" className="text-brand-cream-muted hover:text-brand-gold text-sm transition-colors">Instagram</a></li>
-              )}
-            </ul>
-          </div>
-
-          {/* Contact */}
-          <div>
-            <h3 className="text-brand-cream font-semibold mb-4">{t('contact')}</h3>
-            <ul className="space-y-3">
-              <li className="flex items-center gap-3 text-sm text-brand-cream-muted">
-                <Phone className="w-4 h-4 text-brand-gold flex-shrink-0" />
-                <a href={`tel:${(settings.phone || '').replace(/\s/g, '')}`} className="hover:text-brand-gold transition-colors">{settings.phone}</a>
-              </li>
-              <li className="flex items-center gap-3 text-sm text-brand-cream-muted">
-                <Mail className="w-4 h-4 text-brand-gold flex-shrink-0" />
-                <a href={`mailto:${settings.email}`} className="hover:text-brand-gold transition-colors">{settings.email}</a>
-              </li>
-              <li className="flex items-start gap-3 text-sm text-brand-cream-muted">
-                <MapPin className="w-4 h-4 text-brand-gold flex-shrink-0 mt-0.5" />
-                <span>Grand Montréal & Laval, QC</span>
-              </li>
-            </ul>
+                <li>
+                  <a href={`mailto:${settings.email}`} className="text-brand-cream-muted/60 hover:text-brand-gold text-xs font-sans transition-colors">
+                    {settings.email}
+                  </a>
+                </li>
+                <li className="text-brand-cream-muted/40 text-xs font-sans">Grand Montréal & Laval</li>
+              </ul>
+            </div>
           </div>
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-12 pt-6 border-t border-brand-black-border flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-brand-cream-muted/50 text-xs">
-            © {new Date().getFullYear()} Éclat Auto. {t('rights')}. {t('madeIn')}
+        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-brand-cream-muted/30 text-[10px] font-sans uppercase tracking-widest">
+            © {new Date().getFullYear()} Éclat Auto — {t('rights')}
           </p>
-          <div className="flex gap-4">
-            <Link href="#" className="text-brand-cream-muted/50 hover:text-brand-cream-muted text-xs transition-colors">{t('privacy')}</Link>
-            <Link href="#" className="text-brand-cream-muted/50 hover:text-brand-cream-muted text-xs transition-colors">{t('terms')}</Link>
+          <div className="flex items-center gap-6">
+            {settings.instagramUrl && (
+              <a href={settings.instagramUrl} target="_blank" rel="noopener noreferrer"
+                className="text-brand-cream-muted/30 hover:text-brand-gold text-[10px] font-sans uppercase tracking-widest transition-colors">
+                Instagram
+              </a>
+            )}
+            {settings.facebookUrl && (
+              <a href={settings.facebookUrl} target="_blank" rel="noopener noreferrer"
+                className="text-brand-cream-muted/30 hover:text-brand-gold text-[10px] font-sans uppercase tracking-widest transition-colors">
+                Facebook
+              </a>
+            )}
+            <Link href="#" className="text-brand-cream-muted/30 hover:text-brand-cream-muted text-[10px] font-sans uppercase tracking-widest transition-colors">{t('privacy')}</Link>
           </div>
         </div>
       </div>

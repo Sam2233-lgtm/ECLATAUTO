@@ -10,19 +10,23 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          black: '#0a0a0a',
-          'black-soft': '#111111',
-          'black-card': '#161616',
-          'black-border': '#222222',
-          gold: '#C9A84C',
-          'gold-light': '#D9BC74',
-          'gold-dark': '#A8882E',
-          cream: '#F5F5F0',
-          'cream-muted': '#D0D0C8',
+          black: '#08090a',
+          'black-soft': '#0f1012',
+          'black-card': '#14161a',
+          'black-border': '#1e2128',
+          gold: '#F0B429',
+          'gold-light': '#F5C842',
+          'gold-dark': '#C9901A',
+          blue: '#1B4FD8',
+          'blue-light': '#3B82F6',
+          'blue-bright': '#00C8FF',
+          cream: '#F0EDE8',
+          'cream-muted': '#B0ADA8',
         },
       },
       fontFamily: {
-        sans: ['var(--font-inter)', 'sans-serif'],
+        sans: ['var(--font-dm-sans)', 'sans-serif'],
+        display: ['var(--font-bebas)', 'sans-serif'],
       },
       backgroundImage: {
         'gold-gradient': 'linear-gradient(135deg, #C9A84C 0%, #D9BC74 50%, #A8882E 100%)',

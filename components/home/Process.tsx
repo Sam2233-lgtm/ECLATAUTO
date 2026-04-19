@@ -1,54 +1,50 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { MousePointerClick, Truck, Sparkles } from 'lucide-react';
 
-const STEP_ICONS = [MousePointerClick, Truck, Sparkles];
 const STEP_KEYS = ['book', 'arrive', 'enjoy'] as const;
 
 export default function Process() {
   const t = useTranslations('process');
 
   return (
-    <section className="py-24 px-4 bg-brand-black">
-      <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="section-title">{t('title')}</h2>
-          <div className="gold-divider" />
-          <p className="section-subtitle">{t('subtitle')}</p>
+    <section className="bg-brand-black section-pad">
+      <div className="max-w-7xl mx-auto">
+
+        {/* Header */}
+        <div className="flex items-center gap-4 mb-16">
+          <span className="eyebrow">{t('title')}</span>
+          <div className="flex-1 h-px bg-brand-black-border" />
         </div>
 
-        {/* Steps */}
-        <div className="relative">
-          {/* Connector line */}
-          <div className="absolute top-10 left-[calc(16.67%+1px)] right-[calc(16.67%+1px)] h-px bg-gradient-to-r from-brand-gold/0 via-brand-gold/40 to-brand-gold/0 hidden md:block" />
+        {/* Steps — horizontal timeline */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 relative">
+          {/* Connector */}
+          <div className="absolute top-8 left-[16.5%] right-[16.5%] h-px bg-brand-black-border hidden md:block" />
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            {STEP_KEYS.map((key, index) => {
-              const Icon = STEP_ICONS[index];
-              return (
-                <div key={key} className="text-center relative">
-                  {/* Step number + icon */}
-                  <div className="relative inline-block mb-6">
-                    <div className="w-20 h-20 bg-brand-black-card border-2 border-brand-gold/30 rounded-2xl flex items-center justify-center mx-auto group hover:border-brand-gold/60 hover:bg-brand-gold/10 transition-all duration-300">
-                      <Icon className="w-8 h-8 text-brand-gold" />
-                    </div>
-                    {/* Step number badge */}
-                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-brand-gold rounded-full flex items-center justify-center">
-                      <span className="text-brand-black text-xs font-black">{index + 1}</span>
-                    </div>
-                  </div>
-
-                  <h3 className="text-brand-cream font-semibold text-xl mb-3">
-                    {t(`steps.${key}.title`)}
-                  </h3>
-                  <p className="text-brand-cream-muted text-sm leading-relaxed max-w-xs mx-auto">
-                    {t(`steps.${key}.description`)}
-                  </p>
+          {STEP_KEYS.map((key, index) => (
+            <div key={key} className="relative flex flex-col items-start md:items-center text-left md:text-center p-6 md:px-8">
+              {/* Step number */}
+              <div className="relative mb-6">
+                <div className="w-16 h-16 border border-brand-black-border flex items-center justify-center relative z-10 bg-brand-black">
+                  <span className="font-display text-3xl text-brand-gold leading-none">
+                    {index + 1}
+                  </span>
                 </div>
-              );
-            })}
-          </div>
+                {/* Gold dot for active feel */}
+                {index === 0 && (
+                  <div className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-brand-gold" />
+                )}
+              </div>
+
+              <h3 className="font-display text-2xl text-brand-cream mb-3 leading-none">
+                {t(`steps.${key}.title`)}
+              </h3>
+              <p className="text-brand-cream-muted text-sm leading-relaxed font-light max-w-xs">
+                {t(`steps.${key}.description`)}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
     </section>

@@ -4,9 +4,11 @@
 
 @layer base {
   :root {
-    --brand-black: #0a0a0a;
-    --brand-gold: #C9A84C;
-    --brand-cream: #F5F5F0;
+    --brand-black: #08090a;
+    --brand-gold: #F0B429;
+    --brand-blue: #1B4FD8;
+    --brand-blue-bright: #00C8FF;
+    --brand-cream: #F0EDE8;
   }
 
   * {
@@ -18,98 +20,114 @@
   }
 
   body {
-    background-color: #0a0a0a;
-    color: #F5F5F0;
-    font-family: var(--font-inter), sans-serif;
+    background-color: #08090a;
+    color: #F0EDE8;
+    font-family: var(--font-dm-sans), sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
+  h1, h2, h3, h4 {
+    font-family: var(--font-bebas), sans-serif;
+    letter-spacing: 0.02em;
+  }
+
   ::selection {
-    background-color: #C9A84C;
-    color: #0a0a0a;
+    background-color: #F0B429;
+    color: #08090a;
   }
 
-  ::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: #0a0a0a;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: #C9A84C;
-    border-radius: 3px;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: #D9BC74;
-  }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: #08090a; }
+  ::-webkit-scrollbar-thumb { background: #F0B429; border-radius: 2px; }
 }
 
 @layer components {
-  .gold-text {
-    @apply text-brand-gold;
-  }
-
-  .gold-gradient-text {
-    background: linear-gradient(135deg, #C9A84C 0%, #D9BC74 50%, #A8882E 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .card-dark {
-    @apply bg-brand-black-card border border-brand-black-border rounded-2xl;
-  }
-
-  .card-dark-hover {
-    @apply card-dark transition-all duration-300 hover:border-brand-gold/40 hover:shadow-lg hover:shadow-brand-gold/10;
-  }
-
+  /* ── Buttons ── */
   .btn-gold {
-    @apply bg-brand-gold text-brand-black font-semibold px-6 py-3 rounded-lg
-           transition-all duration-200 hover:bg-brand-gold-light active:scale-95
-           focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2 focus:ring-offset-brand-black;
+    @apply bg-brand-gold text-brand-black font-semibold px-6 py-3
+           uppercase tracking-widest text-sm
+           transition-all duration-200 hover:bg-brand-gold-light
+           active:scale-95 focus:outline-none;
   }
 
   .btn-outline-gold {
-    @apply border border-brand-gold text-brand-gold font-semibold px-6 py-3 rounded-lg
-           transition-all duration-200 hover:bg-brand-gold hover:text-brand-black active:scale-95
-           focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2 focus:ring-offset-brand-black;
+    @apply border border-brand-gold text-brand-gold font-semibold px-6 py-3
+           uppercase tracking-widest text-sm
+           transition-all duration-200 hover:bg-brand-gold hover:text-brand-black
+           active:scale-95 focus:outline-none;
   }
 
   .btn-ghost {
-    @apply text-brand-cream-muted font-medium px-6 py-3 rounded-lg
-           transition-all duration-200 hover:text-brand-cream hover:bg-white/5 active:scale-95;
+    @apply text-brand-cream-muted font-medium px-6 py-3
+           transition-all duration-200 hover:text-brand-cream
+           hover:bg-white/5 active:scale-95;
   }
 
+  /* ── Cards ── */
+  .card-dark {
+    @apply bg-brand-black-card border border-brand-black-border;
+  }
+
+  .card-dark-hover {
+    @apply card-dark transition-all duration-300
+           hover:border-brand-gold/30;
+  }
+
+  /* ── Inputs ── */
   .input-dark {
-    @apply w-full bg-brand-black-soft border border-brand-black-border rounded-lg px-4 py-3
-           text-brand-cream placeholder-brand-cream-muted/50
-           focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold
-           transition-all duration-200;
+    @apply w-full bg-brand-black-soft border border-brand-black-border
+           rounded-none px-4 py-3
+           text-brand-cream placeholder-brand-cream-muted/40
+           focus:outline-none focus:border-brand-gold
+           transition-all duration-200 font-sans;
   }
 
-  .section-title {
-    @apply text-3xl md:text-4xl font-bold text-brand-cream;
+  /* ── Typography ── */
+  .title-display {
+    @apply font-display text-brand-cream leading-none tracking-wide;
   }
 
-  .section-subtitle {
-    @apply text-brand-cream-muted text-lg mt-4 max-w-2xl mx-auto;
+  .eyebrow {
+    @apply text-brand-gold text-xs font-sans font-semibold
+           uppercase tracking-[0.25em];
   }
 
   .gold-divider {
-    @apply w-16 h-0.5 bg-brand-gold mx-auto mt-4;
+    @apply w-12 h-px bg-brand-gold mx-auto mt-4;
+  }
+
+  /* ── Section ── */
+  .section-pad {
+    @apply py-28 px-6 sm:px-10 lg:px-16;
   }
 }
 
 @layer utilities {
-  .text-gradient-gold {
-    background: linear-gradient(135deg, #C9A84C 0%, #D9BC74 100%);
+  /* Gold text gradient */
+  .text-gold-gradient {
+    background: linear-gradient(135deg, #F0B429 0%, #F5C842 50%, #C9901A 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+
+  /* Blue text gradient */
+  .text-blue-gradient {
+    background: linear-gradient(135deg, #1B4FD8 0%, #00C8FF 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Outline text (stroke only) */
+  .text-stroke-gold {
+    -webkit-text-stroke: 1.5px #F0B429;
+    color: transparent;
+  }
+
+  .text-stroke-cream {
+    -webkit-text-stroke: 1px #F0EDE8;
+    color: transparent;
   }
 }
