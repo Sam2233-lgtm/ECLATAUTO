@@ -41,6 +41,7 @@ model Reservation {
   supplements        Json?
   price              Float    @default(0)
   status             String   @default("pending")
+  source             String   @default("ONLINE")
   locale             String   @default("fr")
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
@@ -168,6 +169,31 @@ model Quote {
   token        String?  @unique
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+model ServiceCard {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  imageUrl    String?
+  prices      Json     // { berline: Float, vus: Float, pickup: Float, fourgonnette: Float }
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model MaintenancePlan {
+  id          String   @id @default(cuid())
+  name        String
+  frequency   String
+  price       Float
+  description String
+  features    Json     // String[]
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model SiteSettings {
