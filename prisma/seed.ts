@@ -220,6 +220,84 @@ async function main() {
     console.log('✅ 3 réservations exemples créées');
   }
 
+  // ServiceCards
+  const SERVICE_CARDS = [
+    {
+      name: 'Signature Wash',
+      description:
+        'Lavage complet à la main de la carrosserie et des vitres, nettoyage en profondeur des jantes et des pneus, séchage soigné et application de tire shine pour une finition propre et lustrée.',
+      imageUrl: null,
+      prices: { berline: 169.99, vus: 189.99, pickup: 219.99, fourgonnette: 229.99 },
+      isActive: true,
+      order: 0,
+    },
+    {
+      name: 'Lavage Extérieur',
+      description:
+        'Lavage complet à la main de la carrosserie et des vitres, nettoyage en profondeur des jantes et des pneus, séchage soigné et application de tire shine pour une finition propre et lustrée.',
+      imageUrl: null,
+      prices: { berline: 74.99, vus: 84.99, pickup: 94.99, fourgonnette: 99.99 },
+      isActive: true,
+      order: 1,
+    },
+    {
+      name: 'Détail Intérieur',
+      description:
+        'Nettoyage intérieur complet incluant aspirateur, essuyage des surfaces, vitres intérieures et attention aux moindres recoins pour un habitacle frais et impeccable.',
+      imageUrl: null,
+      prices: { berline: 119.99, vus: 129.99, pickup: 144.99, fourgonnette: 149.99 },
+      isActive: true,
+      order: 2,
+    },
+  ];
+
+  for (const card of SERVICE_CARDS) {
+    const existing = await prisma.serviceCard.findFirst({ where: { name: card.name } });
+    if (!existing) {
+      await prisma.serviceCard.create({ data: card });
+    }
+  }
+  console.log(`✅ ${SERVICE_CARDS.length} ServiceCards seedés`);
+
+  // MaintenancePlans
+  const MAINTENANCE_PLANS = [
+    {
+      name: 'Maintien Mensuel',
+      frequency: '1x/mois',
+      price: 69,
+      description: 'Gardez votre véhicule impeccable chaque mois sans lever le petit doigt.',
+      features: ['Lavage extérieur complet', 'Nettoyage des jantes et pneus', 'Séchage et tire shine'],
+      isActive: true,
+      order: 0,
+    },
+    {
+      name: 'Maintien Bi-mensuel',
+      frequency: '2x/mois',
+      price: 129,
+      description: 'Deux passages par mois pour un véhicule toujours prêt à impressionner.',
+      features: ['Lavage extérieur complet', 'Nettoyage des jantes et pneus', 'Séchage et tire shine'],
+      isActive: true,
+      order: 1,
+    },
+    {
+      name: 'Maintien Hebdomadaire',
+      frequency: '1x/semaine',
+      price: 249,
+      description: 'Pour ceux qui exigent la perfection — un véhicule impeccable chaque semaine.',
+      features: ['Lavage extérieur complet', 'Nettoyage des jantes et pneus', 'Séchage et tire shine'],
+      isActive: true,
+      order: 2,
+    },
+  ];
+
+  for (const plan of MAINTENANCE_PLANS) {
+    const existing = await prisma.maintenancePlan.findFirst({ where: { name: plan.name } });
+    if (!existing) {
+      await prisma.maintenancePlan.create({ data: plan });
+    }
+  }
+  console.log(`✅ ${MAINTENANCE_PLANS.length} MaintenancePlans seedés`);
+
   console.log('\n📋 Identifiants admin:');
   console.log('   Email:        admin@eclatauto.ca');
   console.log('   Mot de passe: Admin123!');
