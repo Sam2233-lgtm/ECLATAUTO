@@ -2,7 +2,7 @@ import { setRequestLocale } from 'next-intl/server';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Hero from '@/components/home/Hero';
-import Services from '@/components/home/Services';
+import ServiceCardsSection from '@/components/home/ServiceCardsSection';
 import WhyUs from '@/components/home/WhyUs';
 import Process from '@/components/home/Process';
 import Gallery from '@/components/home/Gallery';
@@ -39,7 +39,7 @@ export default async function HomePage({ params: { locale } }: HomePageProps) {
       <Header locale={locale} />
       <main>
         <Hero locale={locale} />
-        <Services locale={locale} />
+        <ServiceCardsSection locale={locale} />
         <WhyUs />
         <Process />
         <Gallery locale={locale} />
