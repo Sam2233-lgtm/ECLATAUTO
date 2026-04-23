@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Upload, Trash2, ImagePlus, X, Loader2 } from 'lucide-react';
 import Image from 'next/image';
+import { uploadImageDirect } from '@/lib/upload-client';
 
 interface Photo {
   id: string; filename: string; url: string;
@@ -47,16 +48,33 @@ export default function GalleryManager({ initialPhotos }: { initialPhotos: Photo
     const newPhotos: Photo[] = [];
 
     for (const file of pendingFiles) {
-      const fd = new FormData();
-      fd.append('file', file);
-      fd.append('title', uploadForm.title);
-      fd.append('type', uploadForm.type);
       try {
-        const res = await fetch('/api/admin/photos', { method: 'POST', body: fd });
-        if (!res.ok) { const err = await res.json(); setError(err.error || 'Erreur upload'); continue; }
+        // 1. Upload directly browser → Supabase (bypasses Netlify 6 MB limit)
+        const publicUrl = await uploadImageDirect(file, 'gallery');
+
+        // 2. Create DB record (tiny JSON request — no file)
+        const res = await fetch('/api/admin/photos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            url: publicUrl,
+            filename: file.name,
+            title: uploadForm.title,
+            type: uploadForm.type,
+          }),
+        });
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          setError(err.error || 'Erreur lors de la création de la photo');
+          continue;
+        }
+
         const photo = await res.json();
         newPhotos.push(photo);
-      } catch { setError('Erreur lors de l\'upload.'); }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Erreur lors de l\'upload');
+      }
     }
 
     setPhotos((prev) => [...prev, ...newPhotos]);

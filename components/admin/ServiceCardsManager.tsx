@@ -4,6 +4,7 @@ import { useState, useRef, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Save, Check, UploadCloud, Loader2, ImageOff } from 'lucide-react';
+import { uploadImageDirect } from '@/lib/upload-client';
 
 type Prices = { berline: number; vus: number; pickup: number; fourgonnette: number };
 
@@ -68,36 +69,27 @@ export default function ServiceCardsManager({ cards: initialCards }: ServiceCard
     setUploadingId(id);
     setUploadErrors((prev) => ({ ...prev, [id]: '' }));
     try {
-      const fd = new FormData();
-      fd.append('file', file);
-      const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
-      const data = await res.json();
+      // Upload directly browser → Supabase (bypasses Netlify 6 MB limit)
+      const publicUrl = await uploadImageDirect(file, 'services');
 
-      if (!res.ok) {
-        setUploadErrors((prev) => ({
-          ...prev,
-          [id]: data.error || 'Erreur lors de l\'upload',
-        }));
-        return;
+      // Update local state
+      updateCard(id, { imageUrl: publicUrl });
+
+      // Auto-save imageUrl to DB
+      const card = cards.find((c) => c.id === id);
+      if (card) {
+        await fetch(`/api/admin/service-cards/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...card, imageUrl: publicUrl }),
+        });
+        startTransition(() => router.refresh());
       }
-
-      if (data.url) {
-        // Update local state
-        updateCard(id, { imageUrl: data.url });
-
-        // Auto-save imageUrl to DB immediately (no need to click Sauvegarder)
-        const card = cards.find((c) => c.id === id);
-        if (card) {
-          await fetch(`/api/admin/service-cards/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ...card, imageUrl: data.url }),
-          });
-          startTransition(() => router.refresh());
-        }
-      }
-    } catch {
-      setUploadErrors((prev) => ({ ...prev, [id]: 'Erreur réseau lors de l\'upload' }));
+    } catch (err) {
+      setUploadErrors((prev) => ({
+        ...prev,
+        [id]: err instanceof Error ? err.message : 'Erreur upload',
+      }));
     } finally {
       setUploadingId(null);
     }
