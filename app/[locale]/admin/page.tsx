@@ -90,11 +90,11 @@ export default async function AdminDashboard({ params: { locale } }: AdminDashbo
 
   return (
     <AdminShell locale={locale}>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-brand-cream">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-brand-cream">
           Bonjour, {session?.user?.name?.split(' ')[0] ?? 'Admin'}
         </h1>
-        <p className="text-brand-cream-muted mt-1">Voici un aperçu de votre activité</p>
+        <p className="text-brand-cream-muted text-sm mt-1">Voici un aperçu de votre activité</p>
       </div>
 
       {/* Pending alert banner */}
@@ -199,9 +199,9 @@ export default async function AdminDashboard({ params: { locale } }: AdminDashbo
       </div>
 
       {/* Recent Reservations */}
-      <div className="card-dark p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-brand-cream">Réservations récentes</h2>
+      <div className="card-dark p-5 sm:p-6">
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="text-lg sm:text-xl font-semibold text-brand-cream">Réservations récentes</h2>
           <Link
             href={`/${locale}/admin/reservations`}
             className="text-brand-gold text-sm hover:text-brand-gold/80 transition-colors"
@@ -210,7 +210,30 @@ export default async function AdminDashboard({ params: { locale } }: AdminDashbo
           </Link>
         </div>
 
-        <div className="overflow-x-auto">
+        {/* Mobile: card list */}
+        <div className="md:hidden space-y-3">
+          {recent.length === 0 && (
+            <p className="py-6 text-center text-brand-cream-muted text-sm">Aucune réservation</p>
+          )}
+          {recent.map((r) => (
+            <Link
+              key={r.id}
+              href={`/${locale}/admin/reservations`}
+              className="flex items-center justify-between gap-3 py-3 border-b border-brand-black-border/50 last:border-0"
+            >
+              <div className="min-w-0">
+                <div className="text-brand-cream text-sm font-medium">{r.firstName} {r.lastName}</div>
+                <div className="text-brand-cream-muted text-xs mt-0.5 truncate">
+                  {SERVICE_NAMES[r.service] ?? r.service} · {r.date}
+                </div>
+              </div>
+              <StatusBadge status={r.status} />
+            </Link>
+          ))}
+        </div>
+
+        {/* Desktop: table */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-brand-black-border">

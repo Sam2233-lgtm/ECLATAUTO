@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { getAdminSession } from '@/lib/auth';
-import AdminNav from './AdminNav';
+import AdminLayoutClient from './AdminLayoutClient';
 
 interface AdminShellProps {
   locale: string;
@@ -15,11 +15,8 @@ export default async function AdminShell({ locale, children }: AdminShellProps) 
   }
 
   return (
-    <div className="min-h-screen bg-brand-black flex">
-      <AdminNav locale={locale} session={session} />
-      <div className="flex-1 ml-64">
-        <main className="p-8">{children}</main>
-      </div>
-    </div>
+    <AdminLayoutClient locale={locale} session={session}>
+      {children}
+    </AdminLayoutClient>
   );
 }
