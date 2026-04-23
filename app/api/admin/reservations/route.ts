@@ -34,13 +34,13 @@ export async function POST(req: NextRequest) {
       price, source, notes,
     } = body;
 
-    if (!clientName || !clientPhone || !service || !vehicleType || !date || !timeSlot) {
+    if (!clientName || !service || !vehicleType || !date || !timeSlot) {
       return NextResponse.json({ error: 'Champs requis manquants' }, { status: 400 });
     }
 
     // Split name into first/last
-    const nameParts = (clientName as string).trim().split(/\s+/);
-    const firstName = nameParts[0] ?? clientName;
+    const nameParts = String(clientName).trim().split(/\s+/);
+    const firstName = nameParts[0] ?? String(clientName);
     const lastName = nameParts.slice(1).join(' ') || '—';
 
     const confirmationNumber = await generateConfirmationNumber();
@@ -48,28 +48,34 @@ export async function POST(req: NextRequest) {
     const reservation = await prisma.reservation.create({
       data: {
         confirmationNumber,
-        service,
-        vehicleType,
-        date,
-        timeSlot,
+        service:      String(service),
+        vehicleType:  String(vehicleType),
+        vehicleMake:  '',
+        vehicleModel: '',
+        vehicleYear:  '',
+        vehicleColor: '',
+        date:         String(date),
+        timeSlot:     String(timeSlot),
         firstName,
         lastName,
-        email: clientEmail || '',
-        phone: clientPhone,
-        address: '',
-        city: '',
-        postalCode: '',
-        notes: notes || '',
-        price: price ? parseFloat(price) : 0,
-        source: source || 'TÉLÉPHONE',
-        status: 'confirmed',
-        locale: 'fr',
+        email:        clientEmail  ? String(clientEmail)  : '',
+        phone:        clientPhone  ? String(clientPhone)  : '',
+        address:      '',
+        city:         '',
+        postalCode:   '',
+        notes:        notes        ? String(notes)        : '',
+        price:        price ? parseFloat(String(price)) : 0,
+        source:       source       ? String(source)       : 'TELEPHONE',
+        status:       'confirmed',
+        locale:       'fr',
       },
     });
 
     return NextResponse.json({ success: true, id: reservation.id, confirmationNumber }, { status: 201 });
   } catch (error) {
-    console.error('[Admin reservation create error]', error);
-    return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 });
+    // Log the full error so we can debug on Netlify
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error('[Admin reservation create error]', msg);
+    return NextResponse.json({ error: 'Erreur serveur', detail: msg }, { status: 500 });
   }
 }

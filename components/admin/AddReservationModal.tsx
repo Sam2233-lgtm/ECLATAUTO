@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect, useTransition } from 'react';
+import { useState, useEffect, useRef, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { X, Check, Loader2 } from 'lucide-react';
+import { X, Check, Loader2, CalendarDays } from 'lucide-react';
 
 interface ServiceCard {
   id: string;
@@ -15,44 +15,52 @@ interface AddReservationModalProps {
 }
 
 const VEHICLE_TYPES = [
-  { value: 'berline',      labelFr: 'Berline' },
-  { value: 'vus',          labelFr: 'VUS' },
-  { value: 'pickup',       labelFr: 'Pick-up' },
-  { value: 'fourgonnette', labelFr: 'Fourgonnette' },
+  { value: 'berline',      label: 'Berline' },
+  { value: 'vus',          label: 'VUS' },
+  { value: 'pickup',       label: 'Pick-up' },
+  { value: 'fourgonnette', label: 'Fourgonnette' },
 ] as const;
 
-const SOURCES = ['TÉLÉPHONE', 'TEXTO'] as const;
+const SOURCES = [
+  { value: 'TELEPHONE', label: 'Téléphone' },
+  { value: 'TEXTO',     label: 'Texto' },
+] as const;
 
-const TIME_SLOTS = ['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00'];
+const TIME_SLOTS = [
+  '08:00','09:00','10:00','11:00',
+  '12:00','13:00','14:00','15:00','16:00','17:00',
+];
 
 type VehicleType = typeof VEHICLE_TYPES[number]['value'];
 
 export default function AddReservationModal({ onClose }: AddReservationModalProps) {
   const router = useRouter();
   const [, startTransition] = useTransition();
+  const dateInputRef = useRef<HTMLInputElement>(null);
 
   const [services, setServices] = useState<ServiceCard[]>([]);
   const [form, setForm] = useState({
-    clientName: '',
+    clientName:  '',
     clientPhone: '',
     clientEmail: '',
-    service: '',
+    service:     '',
     vehicleType: 'berline' as VehicleType,
-    date: '',
-    timeSlot: '09:00',
-    price: '',
-    source: 'TÉLÉPHONE' as typeof SOURCES[number],
-    notes: '',
+    date:        '',
+    timeSlot:    '09:00',
+    price:       '',
+    source:      'TELEPHONE' as typeof SOURCES[number]['value'],
+    notes:       '',
   });
   const [submitting, setSubmitting] = useState(false);
-  const [done, setDone] = useState(false);
-  const [error, setError] = useState('');
+  const [done,       setDone]       = useState(false);
+  const [error,      setError]      = useState('');
 
   // Load service cards
   useEffect(() => {
     fetch('/api/public/service-cards')
       .then((r) => r.json())
       .then((data: ServiceCard[]) => {
+        if (!Array.isArray(data)) return;
         setServices(data);
         if (data.length > 0) setForm((f) => ({ ...f, service: data[0].id }));
       })
@@ -62,10 +70,9 @@ export default function AddReservationModal({ onClose }: AddReservationModalProp
   // Auto-compute price when service or vehicleType changes
   useEffect(() => {
     const svc = services.find((s) => s.id === form.service);
-    if (svc) {
-      const p = svc.prices[form.vehicleType as keyof typeof svc.prices];
-      if (p !== undefined) setForm((f) => ({ ...f, price: String(p) }));
-    }
+    if (!svc) return;
+    const p = svc.prices[form.vehicleType as keyof typeof svc.prices];
+    if (p !== undefined) setForm((f) => ({ ...f, price: String(p) }));
   }, [form.service, form.vehicleType, services]);
 
   function set(key: keyof typeof form, val: string) {
@@ -74,8 +81,8 @@ export default function AddReservationModal({ onClose }: AddReservationModalProp
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!form.clientName || !form.clientPhone || !form.service || !form.date || !form.timeSlot) {
-      setError('Veuillez remplir tous les champs obligatoires.');
+    if (!form.clientName || !form.service || !form.date || !form.timeSlot) {
+      setError('Veuillez remplir le nom, le service, la date et l\'heure.');
       return;
     }
     setError('');
@@ -86,20 +93,20 @@ export default function AddReservationModal({ onClose }: AddReservationModalProp
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          clientName: form.clientName,
-          clientPhone: form.clientPhone,
-          clientEmail: form.clientEmail || undefined,
-          service: svc?.name ?? form.service,
+          clientName:  form.clientName,
+          clientPhone: form.clientPhone  || '',
+          clientEmail: form.clientEmail  || '',
+          service:     svc?.name        ?? form.service,
           vehicleType: form.vehicleType,
-          date: form.date,
-          timeSlot: form.timeSlot,
-          price: parseFloat(form.price) || 0,
-          source: form.source,
-          notes: form.notes,
+          date:        form.date,
+          timeSlot:    form.timeSlot,
+          price:       parseFloat(form.price) || 0,
+          source:      form.source,
+          notes:       form.notes,
         }),
       });
       const json = await res.json();
-      if (!json.success) throw new Error(json.error ?? 'Erreur');
+      if (!json.success) throw new Error(json.detail ?? json.error ?? 'Erreur inconnue');
       setDone(true);
       startTransition(() => router.refresh());
       setTimeout(onClose, 1800);
@@ -110,12 +117,18 @@ export default function AddReservationModal({ onClose }: AddReservationModalProp
     }
   }
 
-  // Close on backdrop click
   function handleBackdrop(e: React.MouseEvent<HTMLDivElement>) {
     if (e.target === e.currentTarget) onClose();
   }
 
-  const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+  // Min = today (admin can book same-day)
+  const today = new Date().toISOString().split('T')[0];
+
+  const displayDate = form.date
+    ? new Date(form.date + 'T12:00:00').toLocaleDateString('fr-CA', {
+        weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
+      })
+    : 'Choisir une date...';
 
   return (
     <div
@@ -126,9 +139,7 @@ export default function AddReservationModal({ onClose }: AddReservationModalProp
 
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-brand-black-border flex-shrink-0">
-          <h2 className="text-base font-semibold text-brand-cream">
-            Ajouter une réservation
-          </h2>
+          <h2 className="text-base font-semibold text-brand-cream">Ajouter une réservation</h2>
           <button onClick={onClose} className="p-2 text-brand-cream-muted hover:text-brand-cream transition-colors">
             <X className="w-5 h-5" />
           </button>
@@ -142,7 +153,7 @@ export default function AddReservationModal({ onClose }: AddReservationModalProp
             <p className="text-brand-cream font-semibold">Réservation créée!</p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto">
+          <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto min-h-0">
             <div className="px-5 py-5 space-y-4">
 
               {/* Client name */}
@@ -159,11 +170,11 @@ export default function AddReservationModal({ onClose }: AddReservationModalProp
                 />
               </div>
 
-              {/* Phone + email */}
+              {/* Phone + email — both optional */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs text-brand-cream-muted uppercase tracking-wider mb-1.5 block font-sans">
-                    Téléphone *
+                    Téléphone
                   </label>
                   <input
                     type="tel"
@@ -171,7 +182,6 @@ export default function AddReservationModal({ onClose }: AddReservationModalProp
                     placeholder="514-555-0100"
                     value={form.clientPhone}
                     onChange={(e) => set('clientPhone', e.target.value)}
-                    required
                   />
                 </div>
                 <div>
@@ -199,6 +209,7 @@ export default function AddReservationModal({ onClose }: AddReservationModalProp
                   onChange={(e) => set('service', e.target.value)}
                   required
                 >
+                  {services.length === 0 && <option value="">Chargement...</option>}
                   {services.map((s) => (
                     <option key={s.id} value={s.id}>{s.name}</option>
                   ))}
@@ -215,27 +226,41 @@ export default function AddReservationModal({ onClose }: AddReservationModalProp
                   value={form.vehicleType}
                   onChange={(e) => set('vehicleType', e.target.value)}
                 >
-                  {VEHICLE_TYPES.map(({ value, labelFr }) => (
-                    <option key={value} value={value}>{labelFr}</option>
+                  {VEHICLE_TYPES.map(({ value, label }) => (
+                    <option key={value} value={value}>{label}</option>
                   ))}
                 </select>
               </div>
 
-              {/* Date + time */}
+              {/* Date — custom display + transparent native input overlay */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs text-brand-cream-muted uppercase tracking-wider mb-1.5 block font-sans">
                     Date *
                   </label>
-                  <input
-                    type="date"
-                    className="input-dark w-full"
-                    min={tomorrow}
-                    value={form.date}
-                    onChange={(e) => set('date', e.target.value)}
-                    required
-                  />
+                  <div
+                    className="relative cursor-pointer"
+                    onClick={() => dateInputRef.current?.showPicker?.()}
+                  >
+                    <div className="input-dark flex items-center justify-between pointer-events-none select-none">
+                      <span className={`text-sm truncate ${form.date ? 'text-brand-cream' : 'text-brand-cream-muted/50'}`}>
+                        {displayDate}
+                      </span>
+                      <CalendarDays className="w-4 h-4 text-brand-gold flex-shrink-0 ml-2" />
+                    </div>
+                    <input
+                      ref={dateInputRef}
+                      type="date"
+                      min={today}
+                      value={form.date}
+                      onChange={(e) => set('date', e.target.value)}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      required
+                    />
+                  </div>
                 </div>
+
+                {/* Time */}
                 <div>
                   <label className="text-xs text-brand-cream-muted uppercase tracking-wider mb-1.5 block font-sans">
                     Heure *
@@ -259,7 +284,7 @@ export default function AddReservationModal({ onClose }: AddReservationModalProp
                     Prix ($)
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-cream-muted/50 text-sm">$</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-cream-muted/50 text-sm pointer-events-none">$</span>
                     <input
                       type="number"
                       step="0.01"
@@ -277,10 +302,10 @@ export default function AddReservationModal({ onClose }: AddReservationModalProp
                   <select
                     className="input-dark w-full"
                     value={form.source}
-                    onChange={(e) => set('source', e.target.value as typeof form.source)}
+                    onChange={(e) => set('source', e.target.value)}
                   >
-                    {SOURCES.map((s) => (
-                      <option key={s} value={s}>{s}</option>
+                    {SOURCES.map(({ value, label }) => (
+                      <option key={value} value={value}>{label}</option>
                     ))}
                   </select>
                 </div>
@@ -300,7 +325,11 @@ export default function AddReservationModal({ onClose }: AddReservationModalProp
                 />
               </div>
 
-              {error && <p className="text-red-400 text-sm">{error}</p>}
+              {error && (
+                <p className="text-red-400 text-sm bg-red-500/10 border border-red-500/20 px-3 py-2 rounded">
+                  {error}
+                </p>
+              )}
             </div>
 
             {/* Footer */}

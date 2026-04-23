@@ -1,6 +1,5 @@
-import Image from 'next/image';
 import Link from 'next/link';
-import { Sparkles, Droplets, Wind, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { getActiveServiceCards } from '@/lib/db-services';
 
 interface ServiceCardProps {
@@ -16,14 +15,13 @@ type Prices = {
 };
 
 const PRICE_ROWS = [
-  { key: 'berline',      labelFr: 'Berline',       labelEn: 'Sedan' },
-  { key: 'vus',          labelFr: 'VUS',            labelEn: 'SUV' },
-  { key: 'pickup',       labelFr: 'Pick-up',        labelEn: 'Pick-up' },
-  { key: 'fourgonnette', labelFr: 'Fourgonnette',   labelEn: 'Minivan' },
+  { key: 'berline',      labelFr: 'Berline',     labelEn: 'Sedan' },
+  { key: 'vus',          labelFr: 'VUS',          labelEn: 'SUV' },
+  { key: 'pickup',       labelFr: 'Pick-up',      labelEn: 'Pick-up' },
+  { key: 'fourgonnette', labelFr: 'Fourgonnette', labelEn: 'Minivan' },
 ];
 
-// Fallback icons per service order
-const ICONS = [Sparkles, Droplets, Wind];
+const INDEX_NUMS = ['01', '02', '03', '04', '05'];
 
 export default async function ServiceCardsSection({ locale }: ServiceCardProps) {
   const cards = await getActiveServiceCards();
@@ -51,72 +49,96 @@ export default async function ServiceCardsSection({ locale }: ServiceCardProps) 
         </div>
 
         {/* ── Cards grid ── */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/*
+          gap-0 + divide creates shared 1px borders between cards.
+          Outer border wraps the whole grid.
+        */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-brand-black-border divide-y md:divide-y-0 md:divide-x divide-brand-black-border">
           {cards.map((card, idx) => {
             const prices = card.prices as Prices;
-            const Icon = ICONS[idx % ICONS.length];
+            const indexNum = INDEX_NUMS[idx] ?? String(idx + 1).padStart(2, '0');
+
+            const validPrices = PRICE_ROWS.filter(({ key }) => {
+              const p = prices[key];
+              return p !== undefined && p > 0;
+            });
 
             return (
               <div
                 key={card.id}
-                className="border border-brand-black-border bg-brand-black-soft flex flex-col group hover:border-brand-gold/30 transition-colors duration-300"
+                className="relative bg-brand-black-soft flex flex-col group overflow-hidden"
               >
-                {/* Image or placeholder */}
-                <div className="relative aspect-[4/3] overflow-hidden bg-brand-black-card flex items-center justify-center">
-                  {card.imageUrl ? (
-                    <Image
-                      src={card.imageUrl}
-                      alt={card.name}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-700"
-                      sizes="(max-width: 768px) 100vw, 33vw"
-                    />
-                  ) : (
-                    <div className="flex flex-col items-center gap-3 text-brand-black-border group-hover:text-brand-gold/20 transition-colors duration-300">
-                      <Icon className="w-12 h-12" strokeWidth={1} />
-                      <span className="font-display text-6xl select-none leading-none opacity-30">
-                        {String(idx + 1).padStart(2, '0')}
-                      </span>
-                    </div>
-                  )}
-                  {/* Gold bottom line on hover */}
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-gold scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+                {/* Gold top accent — reveals on hover */}
+                <div className="absolute top-0 left-0 right-0 h-0.5 bg-transparent group-hover:bg-brand-gold transition-colors duration-500 z-10" />
+
+                {/* Large watermark index */}
+                <div
+                  className="absolute top-2 right-4 font-display leading-none select-none pointer-events-none tabular-nums text-brand-cream/[0.03] group-hover:text-brand-gold/[0.07] transition-colors duration-700"
+                  style={{ fontSize: 'clamp(5rem, 8vw, 7.5rem)' }}
+                  aria-hidden="true"
+                >
+                  {indexNum}
                 </div>
 
-                {/* Content */}
-                <div className="flex flex-col flex-1 p-6">
-                  <h3 className="font-display text-2xl text-brand-cream leading-none mb-3 group-hover:text-brand-gold transition-colors duration-300">
+                <div className="flex flex-col flex-1 p-8 pt-10">
+
+                  {/* Index line */}
+                  <div className="flex items-center gap-3 mb-6">
+                    <span className="font-sans text-[10px] text-brand-gold tracking-[0.3em] tabular-nums">
+                      {indexNum}
+                    </span>
+                    <div className="flex-1 h-px bg-brand-black-border" />
+                  </div>
+
+                  {/* Service name */}
+                  <h3 className="font-display text-[2.4rem] leading-none text-brand-cream mb-4 group-hover:text-brand-gold transition-colors duration-300">
                     {card.name}
                   </h3>
-                  <p className="text-brand-cream-muted text-sm leading-relaxed font-light mb-6 flex-1">
+
+                  {/* Description */}
+                  <p className="text-brand-cream-muted/70 text-sm leading-relaxed font-light mb-8 flex-1">
                     {card.description}
                   </p>
 
-                  {/* Price table */}
-                  <div className="border-t border-brand-black-border pt-4 mb-6 space-y-2">
-                    {PRICE_ROWS.map(({ key, labelFr, labelEn }) => {
-                      const price = prices[key];
-                      if (price === undefined || price === 0) return null;
-                      return (
-                        <div key={key} className="flex items-center justify-between">
-                          <span className="text-brand-cream-muted/60 text-xs font-sans uppercase tracking-wider">
-                            {isFr ? labelFr : labelEn}
-                          </span>
-                          <span className="font-display text-lg text-brand-gold leading-none tabular-nums">
-                            {price.toFixed(2)}$
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
+                  {/* Price ledger */}
+                  {validPrices.length > 0 && (
+                    <div className="mb-8">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="text-brand-cream-muted/30 text-[9px] uppercase tracking-[0.3em] font-sans">
+                          {isFr ? 'Tarifs' : 'Pricing'}
+                        </span>
+                        <div className="flex-1 h-px bg-brand-black-border" />
+                      </div>
+                      <div className="space-y-2.5">
+                        {validPrices.map(({ key, labelFr, labelEn }) => {
+                          const price = prices[key]!;
+                          return (
+                            <div key={key} className="flex items-baseline gap-1">
+                              <span className="text-brand-cream-muted/45 text-xs font-sans uppercase tracking-wider whitespace-nowrap">
+                                {isFr ? labelFr : labelEn}
+                              </span>
+                              {/* Dotted leader */}
+                              <span className="flex-1 border-b border-dotted border-brand-black-border/50 mb-0.5 mx-1" />
+                              <span className="font-display text-xl text-brand-gold leading-none tabular-nums">
+                                {price.toFixed(0)}
+                                <span className="text-sm text-brand-gold/60 ml-0.5">$</span>
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
 
                   {/* CTA */}
                   <Link
                     href={`/${locale}/reservation`}
-                    className="group/btn inline-flex items-center gap-2 text-brand-cream text-xs font-sans font-bold uppercase tracking-widest hover:text-brand-gold transition-colors"
+                    className="group/btn flex items-center justify-between border-t border-brand-black-border pt-5 hover:border-brand-gold/20 transition-colors duration-300"
                   >
-                    {isFr ? 'Réserver' : 'Book now'}
-                    <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />
+                    <span className="text-brand-cream-muted/60 text-[10px] font-sans font-bold uppercase tracking-[0.3em] group-hover/btn:text-brand-gold transition-colors duration-200">
+                      {isFr ? 'Réserver' : 'Book now'}
+                    </span>
+                    <ArrowRight className="w-3.5 h-3.5 text-brand-cream-muted/40 group-hover/btn:text-brand-gold group-hover/btn:translate-x-1 transition-all duration-200" />
                   </Link>
                 </div>
               </div>
@@ -126,8 +148,10 @@ export default async function ServiceCardsSection({ locale }: ServiceCardProps) 
 
         {/* ── Bottom CTA ── */}
         <div className="mt-12 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-t border-brand-black-border pt-8">
-          <p className="text-brand-cream-muted text-sm font-light max-w-xs">
-            {isFr ? "Besoin d'un service sur mesure? On s'adapte." : 'Need something custom? We adapt.'}
+          <p className="text-brand-cream-muted/60 text-sm font-light max-w-xs">
+            {isFr
+              ? "Besoin d'un service sur mesure? On s'adapte."
+              : 'Need something custom? We adapt.'}
           </p>
           <Link
             href={`/${locale}/devis`}
