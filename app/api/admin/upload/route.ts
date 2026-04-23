@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminSession } from '@/lib/auth';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
+import { supabase, STORAGE_BUCKET } from '@/lib/supabase';
 
 export async function POST(req: NextRequest) {
   const session = await getAdminSession();
@@ -17,7 +16,10 @@ export async function POST(req: NextRequest) {
   // Validate type
   const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
   if (!allowedTypes.includes(file.type)) {
-    return NextResponse.json({ error: 'Type de fichier non supporté. Utilisez JPEG, PNG ou WebP.' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'Type de fichier non supporté. Utilisez JPEG, PNG ou WebP.' },
+      { status: 400 }
+    );
   }
 
   // Validate size (5 MB max)
@@ -26,14 +28,23 @@ export async function POST(req: NextRequest) {
   }
 
   const ext = file.name.split('.').pop()?.toLowerCase() ?? 'jpg';
-  const filename = `service-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-  const uploadsDir = join(process.cwd(), 'public', 'uploads');
-
-  await mkdir(uploadsDir, { recursive: true });
+  const filename = `services/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
 
   const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
-  await writeFile(join(uploadsDir, filename), buffer);
 
-  return NextResponse.json({ url: `/uploads/${filename}` });
+  const { error: uploadError } = await supabase.storage
+    .from(STORAGE_BUCKET)
+    .upload(filename, Buffer.from(bytes), { contentType: file.type });
+
+  if (uploadError) {
+    console.error('[upload/service-card] Supabase error:', uploadError);
+    return NextResponse.json(
+      { error: `Erreur Supabase Storage: ${uploadError.message}` },
+      { status: 500 }
+    );
+  }
+
+  const { data: { publicUrl } } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(filename);
+
+  return NextResponse.json({ url: publicUrl });
 }
