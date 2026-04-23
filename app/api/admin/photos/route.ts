@@ -22,14 +22,17 @@ export async function POST(req: NextRequest) {
 
   if (!file) return NextResponse.json({ error: 'Aucun fichier fourni' }, { status: 400 });
 
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-  if (!allowedTypes.includes(file.type)) {
-    return NextResponse.json({ error: 'Type de fichier non supporté' }, { status: 400 });
+  // Accept any image format (JPEG, PNG, WebP, HEIC, GIF, AVIF, etc.)
+  if (!file.type.startsWith('image/')) {
+    return NextResponse.json(
+      { error: `Type non supporté: ${file.type}. Envoyez une image.` },
+      { status: 400 }
+    );
   }
 
-  const maxSize = 10 * 1024 * 1024; // 10MB
-  if (file.size > maxSize) {
-    return NextResponse.json({ error: 'Fichier trop volumineux (max 10MB)' }, { status: 400 });
+  // 15 MB max
+  if (file.size > 15 * 1024 * 1024) {
+    return NextResponse.json({ error: 'Fichier trop volumineux (max 15 MB)' }, { status: 400 });
   }
 
   const ext = file.name.split('.').pop() || 'jpg';
@@ -41,8 +44,8 @@ export async function POST(req: NextRequest) {
     .upload(filename, Buffer.from(bytes), { contentType: file.type });
 
   if (uploadError) {
-    console.error('Supabase Storage upload error:', uploadError);
-    return NextResponse.json({ error: 'Erreur lors du téléversement' }, { status: 500 });
+    console.error('[photos] Supabase Storage error:', uploadError.message);
+    return NextResponse.json({ error: `Erreur Supabase: ${uploadError.message}` }, { status: 500 });
   }
 
   const { data: { publicUrl } } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(filename);

@@ -49,6 +49,7 @@ export default function ServiceCardsManager({ cards: initialCards }: ServiceCard
   const [saving, setSaving] = useState<string | null>(null);
   const [saved, setSaved] = useState<string | null>(null);
   const [uploadingId, setUploadingId] = useState<string | null>(null);
+  const [uploadErrors, setUploadErrors] = useState<Record<string, string>>({});
   const fileRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   function updateCard(id: string, patch: Partial<ServiceCard>) {
@@ -65,14 +66,38 @@ export default function ServiceCardsManager({ cards: initialCards }: ServiceCard
 
   async function handleUpload(id: string, file: File) {
     setUploadingId(id);
+    setUploadErrors((prev) => ({ ...prev, [id]: '' }));
     try {
       const fd = new FormData();
       fd.append('file', file);
       const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
       const data = await res.json();
-      if (data.url) updateCard(id, { imageUrl: data.url });
+
+      if (!res.ok) {
+        setUploadErrors((prev) => ({
+          ...prev,
+          [id]: data.error || 'Erreur lors de l\'upload',
+        }));
+        return;
+      }
+
+      if (data.url) {
+        // Update local state
+        updateCard(id, { imageUrl: data.url });
+
+        // Auto-save imageUrl to DB immediately (no need to click Sauvegarder)
+        const card = cards.find((c) => c.id === id);
+        if (card) {
+          await fetch(`/api/admin/service-cards/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ...card, imageUrl: data.url }),
+          });
+          startTransition(() => router.refresh());
+        }
+      }
     } catch {
-      alert("Erreur lors de l'upload.");
+      setUploadErrors((prev) => ({ ...prev, [id]: 'Erreur réseau lors de l\'upload' }));
     } finally {
       setUploadingId(null);
     }
@@ -187,9 +212,14 @@ export default function ServiceCardsManager({ cards: initialCards }: ServiceCard
               </div>
 
               {/* Upload button */}
+              {uploadErrors[card.id] && (
+                <p className="text-red-400 text-xs bg-red-500/10 border border-red-500/20 px-2 py-1.5 leading-tight">
+                  {uploadErrors[card.id]}
+                </p>
+              )}
               <input
                 type="file"
-                accept="image/jpeg,image/png,image/webp"
+                accept="image/*"
                 className="hidden"
                 ref={(el) => { fileRefs.current[card.id] = el; }}
                 onChange={(e) => {

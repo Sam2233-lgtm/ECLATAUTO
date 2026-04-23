@@ -13,18 +13,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Aucun fichier reçu' }, { status: 400 });
   }
 
-  // Validate type
-  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-  if (!allowedTypes.includes(file.type)) {
+  // Accept any image format (JPEG, PNG, WebP, HEIC, GIF, AVIF, etc.)
+  if (!file.type.startsWith('image/')) {
     return NextResponse.json(
-      { error: 'Type de fichier non supporté. Utilisez JPEG, PNG ou WebP.' },
+      { error: `Type non supporté: ${file.type}. Envoyez une image.` },
       { status: 400 }
     );
   }
 
-  // Validate size (5 MB max)
-  if (file.size > 5 * 1024 * 1024) {
-    return NextResponse.json({ error: 'Fichier trop lourd. Max 5 MB.' }, { status: 400 });
+  // 15 MB max
+  if (file.size > 15 * 1024 * 1024) {
+    return NextResponse.json({ error: 'Fichier trop lourd. Maximum 15 MB.' }, { status: 400 });
   }
 
   const ext = file.name.split('.').pop()?.toLowerCase() ?? 'jpg';
@@ -34,12 +33,12 @@ export async function POST(req: NextRequest) {
 
   const { error: uploadError } = await supabase.storage
     .from(STORAGE_BUCKET)
-    .upload(filename, Buffer.from(bytes), { contentType: file.type });
+    .upload(filename, Buffer.from(bytes), { contentType: file.type, upsert: false });
 
   if (uploadError) {
-    console.error('[upload/service-card] Supabase error:', uploadError);
+    console.error('[upload/service-card] Supabase error:', uploadError.message);
     return NextResponse.json(
-      { error: `Erreur Supabase Storage: ${uploadError.message}` },
+      { error: `Erreur Supabase: ${uploadError.message}` },
       { status: 500 }
     );
   }
