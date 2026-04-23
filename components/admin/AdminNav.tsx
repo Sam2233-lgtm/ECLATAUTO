@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import {
   LayoutDashboard, CalendarDays, LogOut, Settings, Images,
-  Tag, Wrench, FileText, CalendarX, Car, PlusCircle, ClipboardList, X,
+  Tag, Wrench, FileText, CalendarX, Car, PlusCircle, ClipboardList, X, Layers, RotateCcw,
 } from 'lucide-react';
 import type { Session } from 'next-auth';
 
@@ -21,8 +21,10 @@ export default function AdminNav({ locale, session, mobileOpen = false, onClose 
 
   const navItems = [
     { label: 'Dashboard',                                            href: `/${locale}/admin`,                  icon: LayoutDashboard, exact: true },
-    { label: locale === 'fr' ? 'Réservations' : 'Reservations',    href: `/${locale}/admin/reservations`,     icon: CalendarDays },
-    { label: 'Services',                                             href: `/${locale}/admin/services`,         icon: Wrench },
+    { label: locale === 'fr' ? 'Réservations' : 'Reservations',    href: `/${locale}/admin/reservations`,       icon: CalendarDays },
+    { label: locale === 'fr' ? 'Services' : 'Services',            href: `/${locale}/admin/service-cards`,      icon: Layers },
+    { label: locale === 'fr' ? 'Maintien' : 'Maintenance',         href: `/${locale}/admin/maintenance-plans`,  icon: RotateCcw },
+    { label: locale === 'fr' ? 'Services (avancé)' : 'Services (adv)', href: `/${locale}/admin/services`,      icon: Wrench },
     { label: locale === 'fr' ? 'Suppléments' : 'Supplements',      href: `/${locale}/admin/supplements`,      icon: PlusCircle },
     { label: locale === 'fr' ? 'Véhicules' : 'Vehicles',           href: `/${locale}/admin/vehicle-categories`, icon: Car },
     { label: 'Promotions',                                           href: `/${locale}/admin/promotions`,       icon: Tag },

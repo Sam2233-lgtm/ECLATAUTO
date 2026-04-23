@@ -7,6 +7,7 @@ import { Calendar, Clock, TrendingUp, CalendarDays, Wrench, Tag, Images, FileTex
 import Link from 'next/link';
 import AdminShell from '@/components/admin/AdminShell';
 import StatusBadge from '@/components/admin/StatusBadge';
+import AddReservationButton from '@/components/admin/AddReservationButton';
 
 interface AdminDashboardProps {
   params: { locale: string };
@@ -90,11 +91,14 @@ export default async function AdminDashboard({ params: { locale } }: AdminDashbo
 
   return (
     <AdminShell locale={locale}>
-      <div className="mb-6 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-brand-cream">
-          Bonjour, {session?.user?.name?.split(' ')[0] ?? 'Admin'}
-        </h1>
-        <p className="text-brand-cream-muted text-sm mt-1">Voici un aperçu de votre activité</p>
+      <div className="mb-6 sm:mb-8 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-brand-cream">
+            Bonjour, {session?.user?.name?.split(' ')[0] ?? 'Admin'}
+          </h1>
+          <p className="text-brand-cream-muted text-sm mt-1">Voici un aperçu de votre activité</p>
+        </div>
+        <AddReservationButton />
       </div>
 
       {/* Pending alert banner */}
