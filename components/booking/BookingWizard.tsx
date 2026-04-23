@@ -75,6 +75,7 @@ export default function BookingWizard({
   const STEP_LABELS = isFr ? STEP_LABELS_FR : STEP_LABELS_EN;
 
   const topRef = useRef<HTMLDivElement>(null);
+  const dateInputRef = useRef<HTMLInputElement>(null);
 
   const [step, setStep] = useState(0);
   const [animating, setAnimating] = useState(false);
@@ -168,7 +169,7 @@ export default function BookingWizard({
 
   async function handleSubmit() {
     const errors: Record<string, string> = {};
-    const required = ['firstName', 'lastName', 'phone', 'email', 'address', 'city', 'postalCode'] as const;
+    const required = ['firstName', 'lastName', 'phone', 'email', 'address', 'city'] as const;
     required.forEach(f => {
       if (!contact[f].trim()) errors[f] = isFr ? 'Requis' : 'Required';
     });
@@ -176,8 +177,6 @@ export default function BookingWizard({
       errors.email = isFr ? 'Courriel invalide' : 'Invalid email';
     if (!errors.phone && !isValidPhone(contact.phone))
       errors.phone = isFr ? 'Numéro invalide (10 chiffres)' : 'Invalid phone (10 digits)';
-    if (!errors.postalCode && !isValidPostalCode(contact.postalCode))
-      errors.postalCode = isFr ? 'Ex: H2X 1Y3' : 'E.g. H2X 1Y3';
 
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
@@ -481,7 +480,10 @@ export default function BookingWizard({
                   {isFr ? 'Date' : 'Date'}
                 </label>
                 {/* Custom date display + native picker overlay — works on all browsers */}
-                <div className="relative">
+                <div
+                  className="relative cursor-pointer"
+                  onClick={() => dateInputRef.current?.showPicker?.()}
+                >
                   <div className="input-dark flex items-center justify-between pointer-events-none select-none">
                     <span className={date ? 'text-brand-cream font-medium' : 'text-brand-cream-muted/50'}>
                       {date
@@ -494,6 +496,7 @@ export default function BookingWizard({
                     <CalendarDays className="w-5 h-5 text-brand-gold flex-shrink-0" />
                   </div>
                   <input
+                    ref={dateInputRef}
                     type="date"
                     value={date}
                     min={new Date(Date.now() + 86400000).toISOString().split('T')[0]}
@@ -632,28 +635,16 @@ export default function BookingWizard({
                 {fieldErrors.address && <p className="text-amber-400 text-xs mt-1">{fieldErrors.address}</p>}
               </div>
 
-              {/* Ville + Code postal */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <input
-                    className={`input-dark min-h-[48px] ${fieldErrors.city ? 'border-amber-500' : ''}`}
-                    placeholder={isFr ? 'Ville *' : 'City *'}
-                    autoComplete="address-level2" name="city"
-                    value={contact.city}
-                    onChange={e => { setContact(c => ({...c, city: e.target.value})); setFieldErrors(p => { const n = {...p}; delete n.city; return n; }); }}
-                  />
-                  {fieldErrors.city && <p className="text-amber-400 text-xs mt-1">{fieldErrors.city}</p>}
-                </div>
-                <div>
-                  <input
-                    className={`input-dark min-h-[48px] ${fieldErrors.postalCode ? 'border-amber-500' : ''}`}
-                    placeholder={isFr ? 'Code postal *' : 'Postal code *'}
-                    autoComplete="postal-code" name="postalCode"
-                    value={contact.postalCode}
-                    onChange={e => { setContact(c => ({...c, postalCode: e.target.value})); setFieldErrors(p => { const n = {...p}; delete n.postalCode; return n; }); }}
-                  />
-                  {fieldErrors.postalCode && <p className="text-amber-400 text-xs mt-1">{fieldErrors.postalCode}</p>}
-                </div>
+              {/* Ville */}
+              <div>
+                <input
+                  className={`input-dark min-h-[48px] ${fieldErrors.city ? 'border-amber-500' : ''}`}
+                  placeholder={isFr ? 'Ville *' : 'City *'}
+                  autoComplete="address-level2" name="city"
+                  value={contact.city}
+                  onChange={e => { setContact(c => ({...c, city: e.target.value})); setFieldErrors(p => { const n = {...p}; delete n.city; return n; }); }}
+                />
+                {fieldErrors.city && <p className="text-amber-400 text-xs mt-1">{fieldErrors.city}</p>}
               </div>
 
               {/* Détails véhicule — accordéon optionnel */}
