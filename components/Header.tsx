@@ -29,6 +29,7 @@ export default function Header({ locale }: HeaderProps) {
   const navLinks = [
     { label: t('home'), href: `/${locale}` },
     { label: t('services'), href: `/${locale}#services` },
+    { label: locale === 'fr' ? 'Maintien' : 'Maintenance', href: `/${locale}/maintien` },
     { label: t('about'), href: `/${locale}#why-us` },
     { label: t('contact'), href: `/${locale}#contact` },
     { label: t('suivi'), href: `/${locale}/suivi` },
