@@ -146,7 +146,16 @@ export async function getBlockedDates() {
 
 // Generate a human-readable confirmation number
 export async function generateConfirmationNumber(): Promise<string> {
-  const count = await prisma.reservation.count();
-  const num = String(count + 1).padStart(6, '0');
-  return `EA-${num}`;
+  // Retry up to 10 times to avoid unique constraint collisions
+  for (let i = 0; i < 10; i++) {
+    const num = String(Math.floor(100000 + Math.random() * 900000)); // 6-digit random
+    const candidate = `EA-${num}`;
+    const exists = await prisma.reservation.findUnique({
+      where: { confirmationNumber: candidate },
+      select: { id: true },
+    });
+    if (!exists) return candidate;
+  }
+  // Fallback: timestamp-based (virtually impossible to collide)
+  return `EA-${Date.now().toString().slice(-8)}`;
 }
