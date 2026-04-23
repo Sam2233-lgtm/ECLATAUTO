@@ -38,7 +38,7 @@ export default async function HomePage({ params: { locale } }: HomePageProps) {
     <div className="min-h-screen bg-brand-black">
       <Header locale={locale} />
       <main>
-        <Hero locale={locale} />
+        <Hero locale={locale} settings={settings} />
         <ServiceCardsSection locale={locale} />
         <WhyUs />
         <Process />

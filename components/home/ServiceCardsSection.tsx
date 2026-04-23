@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Sparkles, Droplets, Wind, ArrowRight } from 'lucide-react';
-import { prisma } from '@/lib/prisma';
+import { getActiveServiceCards } from '@/lib/db-services';
 
 interface ServiceCardProps {
   locale: string;
@@ -25,15 +25,8 @@ const PRICE_ROWS = [
 // Fallback icons per service order
 const ICONS = [Sparkles, Droplets, Wind];
 
-async function getCards() {
-  return prisma.serviceCard.findMany({
-    where: { isActive: true },
-    orderBy: { order: 'asc' },
-  });
-}
-
 export default async function ServiceCardsSection({ locale }: ServiceCardProps) {
-  const cards = await getCards();
+  const cards = await getActiveServiceCards();
   if (cards.length === 0) return null;
 
   const isFr = locale === 'fr';

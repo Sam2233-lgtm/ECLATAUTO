@@ -83,14 +83,25 @@ export function calcPromoPrice(basePrice: number, promo: ActivePromotion): numbe
 
 export const getSiteSettings = unstable_cache(
   async () => {
-    return prisma.siteSettings.upsert({
-      where: { id: 'singleton' },
-      update: {},
-      create: { id: 'singleton' },
-    });
+    // findUnique is faster than upsert (read-only, no write lock)
+    const settings = await prisma.siteSettings.findUnique({ where: { id: 'singleton' } });
+    if (settings) return settings;
+    // First boot: create defaults
+    return prisma.siteSettings.create({ data: { id: 'singleton' } });
   },
   ['site-settings'],
   { revalidate: 3600, tags: ['settings'] } // 1 hour cache — settings change rarely
+);
+
+export const getActiveServiceCards = unstable_cache(
+  async () => {
+    return prisma.serviceCard.findMany({
+      where: { isActive: true },
+      orderBy: { order: 'asc' },
+    });
+  },
+  ['active-service-cards'],
+  { revalidate: 3600, tags: ['service-cards'] }
 );
 
 export const getActivePhotos = unstable_cache(

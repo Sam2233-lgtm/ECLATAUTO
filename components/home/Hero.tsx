@@ -1,13 +1,15 @@
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import { getSiteSettings } from '@/lib/db-services';
+import type { getSiteSettings } from '@/lib/db-services';
+
+type Settings = Awaited<ReturnType<typeof getSiteSettings>>;
 
 interface HeroProps {
   locale: string;
+  settings: Settings;
 }
 
-export default async function Hero({ locale }: HeroProps) {
-  const settings = await getSiteSettings();
+export default function Hero({ locale, settings }: HeroProps) {
   const isFr = locale === 'fr';
 
   return (
