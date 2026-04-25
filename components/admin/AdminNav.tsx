@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import {
   LayoutDashboard, CalendarDays, LogOut, Settings, Images,
-  Tag, Wrench, FileText, CalendarX, Car, PlusCircle, ClipboardList, X, Layers, RotateCcw,
+  Tag, Wrench, FileText, CalendarX, Car, PlusCircle, ClipboardList, X, Layers, RotateCcw, QrCode,
 } from 'lucide-react';
 import type { Session } from 'next-auth';
 

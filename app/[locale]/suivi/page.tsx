@@ -195,7 +195,7 @@ function SuiviContent() {
 
             <div className="flex items-center justify-between bg-brand-black rounded-xl px-5 py-4 border border-brand-black-border">
               <span className="text-brand-cream-muted text-sm">{isFr ? 'Prix estimé' : 'Estimated price'}</span>
-              <span className="text-brand-gold text-xl font-bold">~{result.price}$</span>
+              <span className="text-brand-gold text-xl font-bold">~{Number(result.price).toFixed(2)}$</span>
             </div>
 
             {result.status === 'cancelled' && (

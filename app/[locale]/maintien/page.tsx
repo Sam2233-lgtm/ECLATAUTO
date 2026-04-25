@@ -204,7 +204,7 @@ export default async function MaintienPage({ params: { locale } }: Props) {
                       <div className="border-t border-brand-black-border pt-6 mb-6">
                         <div className="flex items-end gap-1">
                           <span className="font-display text-5xl text-[#C9A84C] leading-none">
-                            {plan.price}$
+                            {Number(plan.price).toFixed(2)}$
                           </span>
                           <span className="text-brand-cream-muted text-sm mb-1 font-sans">
                             /{isFr ? 'mois' : 'month'}

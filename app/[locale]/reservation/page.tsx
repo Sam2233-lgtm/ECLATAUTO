@@ -19,10 +19,20 @@ export async function generateMetadata({ params: { locale } }: ReservationPagePr
 
 export default async function ReservationPage({ params: { locale } }: ReservationPageProps) {
   setRequestLocale(locale);
-  const [services, categories] = await Promise.all([
-    getActiveServicesWithPromos(),
-    prisma.vehicleCategory.findMany({ where: { active: true }, orderBy: { order: 'asc' } }),
-  ]);
+
+  let services: Awaited<ReturnType<typeof getActiveServicesWithPromos>> = [];
+  type VehicleCategory = Awaited<ReturnType<typeof prisma.vehicleCategory.findMany>>[number];
+  let categories: VehicleCategory[] = [];
+
+  try {
+    [services, categories] = await Promise.all([
+      getActiveServicesWithPromos(),
+      prisma.vehicleCategory.findMany({ where: { active: true }, orderBy: { order: 'asc' } }),
+    ]);
+  } catch (err) {
+    console.error('[ReservationPage] DB error:', err);
+    // Render page with empty data — BookingWizard handles empty services gracefully
+  }
 
   return (
     <div className="min-h-screen bg-brand-black">

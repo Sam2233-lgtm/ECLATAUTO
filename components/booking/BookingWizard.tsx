@@ -49,7 +49,7 @@ function getPriceForCategory(service: DbService, categoryId: string): number | n
 }
 
 function isValidEmail(email: string): boolean {
-  return email.includes('@') && email.includes('.');
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim());
 }
 function isValidPhone(phone: string): boolean {
   return phone.replace(/\D/g, '').length >= 10;
@@ -233,7 +233,7 @@ export default function BookingWizard({
 
   /* ─── SUCCESS SCREEN ─── */
   if (confirmedId) {
-    const displayRef = confirmationNumber || confirmedId.slice(-8).toUpperCase();
+    const displayRef = confirmationNumber || `EA-${confirmedId.slice(-6).toUpperCase()}`;
     return (
       <div className="max-w-md mx-auto text-center py-12 px-4" ref={topRef}>
         <div className="w-20 h-20 bg-brand-gold/10 border-2 border-brand-gold/30 rounded-full flex items-center justify-center mx-auto mb-6">
