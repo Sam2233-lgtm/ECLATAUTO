@@ -169,7 +169,7 @@ export default function BookingWizard({
 
   async function handleSubmit() {
     const errors: Record<string, string> = {};
-    const required = ['firstName', 'lastName', 'phone', 'email', 'address', 'city'] as const;
+    const required = ['firstName', 'lastName', 'phone', 'email', 'address', 'city', 'postalCode'] as const;
     required.forEach(f => {
       if (!contact[f].trim()) errors[f] = isFr ? 'Requis' : 'Required';
     });
@@ -177,6 +177,8 @@ export default function BookingWizard({
       errors.email = isFr ? 'Courriel invalide' : 'Invalid email';
     if (!errors.phone && !isValidPhone(contact.phone))
       errors.phone = isFr ? 'Numéro invalide (10 chiffres)' : 'Invalid phone (10 digits)';
+    if (!errors.postalCode && contact.postalCode.trim() && !isValidPostalCode(contact.postalCode))
+      errors.postalCode = isFr ? 'Code postal invalide (ex: J3G 2A1)' : 'Invalid postal code (e.g. J3G 2A1)';
 
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
@@ -217,12 +219,13 @@ export default function BookingWizard({
         setConfirmationNumber(json.confirmationNumber || null);
         topRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       } else {
-        setError(isFr
-          ? 'Erreur lors de la réservation. Veuillez réessayer.'
-          : 'Booking error. Please try again.');
+        console.error('[BookingWizard] API error:', json);
+        const apiError = json.error ?? (isFr ? 'Erreur lors de la réservation.' : 'Booking error.');
+        setError(apiError);
       }
-    } catch {
-      setError(isFr ? 'Erreur de connexion.' : 'Connection error.');
+    } catch (err) {
+      console.error('[BookingWizard] Network error:', err);
+      setError(isFr ? 'Erreur de connexion. Vérifiez votre réseau et réessayez.' : 'Connection error. Check your network and try again.');
     } finally {
       setSubmitting(false);
     }
@@ -635,16 +638,28 @@ export default function BookingWizard({
                 {fieldErrors.address && <p className="text-amber-400 text-xs mt-1">{fieldErrors.address}</p>}
               </div>
 
-              {/* Ville */}
-              <div>
-                <input
-                  className={`input-dark min-h-[48px] ${fieldErrors.city ? 'border-amber-500' : ''}`}
-                  placeholder={isFr ? 'Ville *' : 'City *'}
-                  autoComplete="address-level2" name="city"
-                  value={contact.city}
-                  onChange={e => { setContact(c => ({...c, city: e.target.value})); setFieldErrors(p => { const n = {...p}; delete n.city; return n; }); }}
-                />
-                {fieldErrors.city && <p className="text-amber-400 text-xs mt-1">{fieldErrors.city}</p>}
+              {/* Ville + Code postal */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <input
+                    className={`input-dark min-h-[48px] ${fieldErrors.city ? 'border-amber-500' : ''}`}
+                    placeholder={isFr ? 'Ville *' : 'City *'}
+                    autoComplete="address-level2" name="city"
+                    value={contact.city}
+                    onChange={e => { setContact(c => ({...c, city: e.target.value})); setFieldErrors(p => { const n = {...p}; delete n.city; return n; }); }}
+                  />
+                  {fieldErrors.city && <p className="text-amber-400 text-xs mt-1">{fieldErrors.city}</p>}
+                </div>
+                <div>
+                  <input
+                    className={`input-dark min-h-[48px] ${fieldErrors.postalCode ? 'border-amber-500' : ''}`}
+                    placeholder={isFr ? 'Code postal *' : 'Postal code *'}
+                    autoComplete="postal-code" name="postalCode"
+                    value={contact.postalCode}
+                    onChange={e => { setContact(c => ({...c, postalCode: e.target.value})); setFieldErrors(p => { const n = {...p}; delete n.postalCode; return n; }); }}
+                  />
+                  {fieldErrors.postalCode && <p className="text-amber-400 text-xs mt-1">{fieldErrors.postalCode}</p>}
+                </div>
               </div>
 
               {/* Détails véhicule — accordéon optionnel */}

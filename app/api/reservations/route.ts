@@ -108,13 +108,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, id: reservation.id, confirmationNumber }, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
+      const fieldMessages = error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ');
+      console.error('[Reservation] Zod validation error:', fieldMessages, error.errors);
       return NextResponse.json(
-        { success: false, error: 'Données invalides', details: error.errors },
+        { success: false, error: `Données invalides: ${fieldMessages}`, details: error.errors },
         { status: 400 }
       );
     }
-    console.error('Reservation creation error:', error);
-    return NextResponse.json({ success: false, error: 'Erreur serveur' }, { status: 500 });
+    console.error('[Reservation] Unexpected error:', error);
+    const message = error instanceof Error ? error.message : 'Erreur inconnue';
+    return NextResponse.json({ success: false, error: `Erreur serveur: ${message}` }, { status: 500 });
   }
 }
 
